@@ -1,6 +1,6 @@
 
-r = 30;
-r_change_rate = 1
+r = 8;
+r_change_rate = 0.125
 
 
 function solid(x, y)
@@ -10,25 +10,27 @@ function solid(x, y)
 	-- check if flag 1 is set (the
 	-- orange toggle button in the 
 	-- sprite editor)
-	return fget(val, 2) 
+	return fget(val, 1)
 end
 
-function check_in_circle(x, y, i, j)
-	if ((i-x)*(i-x) + (j-y)*(j-y) < r*r) then
+function check_in_circle(x, y, i, j, h)
+	if ((i-x)*(i-x) + (j-y)*(j-y) < h*h) then
 		return true
 	end
 
 	return false;
 end
 
+function round_to_eight(n)
+	return 8*(flr(n/8));
+end
+
 function solid_area(x,y,h)
 	for i=x-h,x+h do
 		for j=y-h,y+h do
-			if(check_in_circle(x, y, i, j)) then
-				local i2 = i / 8
-				local j2 = j / 8
-				if(fget(mget(i2, j2), 1)) then
-					print("0",i, j,5)
+			if(check_in_circle(x, y, i, j, h)) then
+				if(fget(mget(i, j), 1)) then
+					print("0",round_to_eight(i*8), round_to_eight(j*8),5)
 				end
 			end
 		end
@@ -45,14 +47,14 @@ function check_circle(x, y)
     for each of the points within radius, if the sprite there has the collider flag (1), print a zero there
     ]]--    
 
-    solid_area(x, y, r)
+    solid_area(x/8, y/8, r)
 	
 	print(".",x,y,8)
 
-	if btn(2) and r>10 then
+	if btn(2) and r>2 then
 		r-=r_change_rate
 	end
-	if btn(3) and r<30 then
+	if btn(3) and r<8 then
 		r+=r_change_rate
 	end
 end
