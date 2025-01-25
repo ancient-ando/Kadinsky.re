@@ -3,6 +3,10 @@
 gravity = 0.3
 friction = 0.85
 
+--number of frames player can spend in the air and still be able to jump
+max_coyote = 10
+coyote_time = 0
+
 --simple camera
 cam_x = 0
 
@@ -35,7 +39,7 @@ function _init()
         max_dx = 2,
         max_dy = 3,
         acc = 0.5,
-        boost = 1,
+        boost = 4,
         ani = 0,
         running = false ,
         jumping = false ,
@@ -84,13 +88,17 @@ function player_update()
 
     --collision
     if player.dy > 0 then
+        if coyote_time <= 0 then
+            coyote_time = 10
+        end
         player.falling = true
-        player.landed = false
         player.jumping = false
 
         player.dy = limit_speed(player.dy, player.max_dy)
         if collide_map(player, "down", 0) then
-            player.landed = true 
+            
+            player.landed = true
+           
             player.falling = false
             player.dy = 0
             player.y -= (player.y + player.h + 1) % 8 - 1 
@@ -156,7 +164,8 @@ function player_animate()
     end
 end
 
-
+last_time = 0
+delta_time = 0
 function _update()
     player_update()
     player_animate()
@@ -170,6 +179,15 @@ function _update()
         cam_x = map_end - 128
     end
     camera(cam_x, 0)
+
+    --coyote time
+    if coyote_time > 0 then
+       coyote_time -= 1
+       if coyote_time <= 0 then
+           player.landed = false
+           coyote_time = 0
+       end
+    end
 end
 --update and draw
 function _draw()
