@@ -288,3 +288,14 @@ function render_cursed_chests()
     
     --cursed_keys_last_frame = cursed_keys_current_frame
 end
+
+function draw_items()
+    map(0, 0, 0, 0, 128, 16, 1)
+    map(0, 0, 0, 0, 128, 16, 2)
+    map(0, 0, 0, 0, 128, 16, 4)
+
+    render_cursed_keys()
+    get_cursed_keys()
+    render_cursed_chests()
+    get_cursed_chests()
+end

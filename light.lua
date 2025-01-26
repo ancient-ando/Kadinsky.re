@@ -945,7 +945,7 @@ light_offsets={
  function light:s_default()
   --anchor to avatar
   --self.pos=ply.pos
-  self.pos = v(player.x - cam_x, player.y - cam_y)
+  self.pos = v(player.x - cam_x + player.w / 2, player.y - cam_y + player.h / 2)
   --[[controlling the light
   if btn(2) and self.bri>0.2 then
    --self.bri-=0.02
@@ -1350,9 +1350,10 @@ function draw_light()
  
  camera(cam_x, cam_y)
 
- map(0, 0, 0, 0, 128, 16, 1)
- map(0, 0, 0, 0, 128, 16, 2)
- map(0, 0, 0, 0, 128, 16, 4)
+
+ map(0, 0, 0, 0, 128, 128, 1)
+ map(0, 0, 0, 0, 128, 128, 2)
+ map(0, 0, 0, 0, 128, 128, 4)
 
  render_cursed_keys()
  get_cursed_keys()

@@ -23,23 +23,23 @@ function _update60()
 	player_animate()
        
 
-    update_light()
+   update_light()
 
-	camera_update()
+   camera_update()
 
 end
 
 function _draw()
     
-    draw_cam()
+   -- draw_cam()
     
     draw_light()
     
     --draw_actors()
 
-    update_bubble(player.x+ player.w / 4, player.y+player.h / 4)
+    update_bubble(player.x + player.w / 4, player.y+player.h / 4)
 
-    show_performance()
+    --show_performance()
 end
 
 function show_performance()

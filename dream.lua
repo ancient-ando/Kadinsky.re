@@ -56,11 +56,17 @@ function player_update()
     player.dx *= friction 
     --controls
     if btn(k_left) then 
+        if player.landed then
+            sfx(12)
+        end
         player.dx -= player.acc
         player.running = true
         player.flip = true
     end
     if btn(k_right) then
+        if player.landed then
+            sfx(12)
+        end
         player.dx += player.acc
         player.running = true
         player.flip = false
@@ -78,6 +84,7 @@ function player_update()
     --jump 
     if btnp(k_x) and 
     player.landed then
+        sfx(11)
         player.dy -= player.boost
         player.landed = false
     end
