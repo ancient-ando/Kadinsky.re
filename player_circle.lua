@@ -4,8 +4,8 @@ max_r = 6
 min_r = 2
 range = max_r-min_r
 radius_percent = (radius-min_r)*100/range
-bubble_time = 220
-max_bubble_time = 220
+bubble_time = 100
+max_bubble_time = 100
 
 function check_in_circle(x, y, i, j, h)
 	if ((i-x)*(i-x) + (j-y)*(j-y) < h*h) then
@@ -33,20 +33,14 @@ function sweep_circle(x,y,h)
 end
 
 
-level_index = 0
 --Currently called by the dream.lua's _update function so that it can print things
 function update_bubble(x, y)
     if bubble_time > 0 then
        bubble_time -= 0.25
 	   radius = min_r+(range*(bubble_time/max_bubble_time))
        if bubble_time <= 0 then
-           --reset()
-		   level_index+= 1
-		   if(level_index > 3) then
-			level_index = 0
-		   end
-		   load_level(0, level_index*16*8)
-		   
+		   --reloads
+		   reload_level()
        end
     end
 

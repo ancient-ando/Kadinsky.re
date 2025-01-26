@@ -8,7 +8,7 @@ srand(1)
 num_cursed_keys = 3
 num_keys_get = 0
 
-num_cursed_chests = 3
+num_cursed_chests = 1
 num_opened_chests = 0
 
 function get_hash(celx, cely)
@@ -48,6 +48,9 @@ function get_cursed_chests()
             cursed_chests_last_frame[get_hash(celx, cely)] = "open"
             num_opened_chests += 1
             num_keys_get -= 1
+            if num_opened_chests >= num_cursed_chests then
+                load_next_level()
+            end
         end
     end
     end
@@ -111,7 +114,7 @@ function render_cursed_keys()
 
     for k, va in pairs(cursed_keys_current_frame) do
         if "inside" == va then
-        if allocated_keys < num_cursed_keys and rnd(1) < 0.5 then -- this number controls how cursed it is, 0 means devil, 1 means normal
+        if allocated_keys < num_cursed_keys and rnd(1) < 1 then -- this number controls how cursed it is, 0 means devil, 1 means normal
             cursed_keys_current_frame[k] = "key"
             allocated_keys += 1
         end
@@ -151,9 +154,9 @@ function render_cursed_keys()
     end]]--
     for k, va in pairs(cursed_keys_current_frame) do
         if "key" == va then
-            spr(102, get_hashx(k), get_hashy(k), 1, 1) -- cursed_key
+            spr(128, get_hashx(k), get_hashy(k), 1, 1) -- cursed_key
         elseif "inside_empty" == va or "outside_empty" == va or "empty" == va then
-            spr(117, get_hashx(k), get_hashy(k), 1, 1) -- empty_key
+            --spr(117, get_hashx(k), get_hashy(k), 1, 1) -- empty_key
             --cursed_keys_current_frame[k] = nil
         end
     end
@@ -269,12 +272,12 @@ function render_cursed_chests()
     end]]--
     for k, va in pairs(cursed_chests_current_frame) do
         if "chest" == va then
-            spr(105, get_hashx(k), get_hashy(k), 1, 1) -- cursed_chest
+            spr(131, get_hashx(k), get_hashy(k), 1, 1) -- cursed_chest
         elseif "inside_empty" == va or "outside_empty" == va or "empty" == va then
-            spr(117, get_hashx(k), get_hashy(k), 1, 1) -- empty_chest
+            --spr(117, get_hashx(k), get_hashy(k), 1, 1) -- empty_chest
             --cursed_keys_current_frame[k] = nil
         elseif "open" == va then
-            spr(120, get_hashx(k), get_hashy(k), 1, 1) -- opened_chest
+            spr(147, get_hashx(k), get_hashy(k), 1, 1) -- opened_chest
         end
     end
     --[[for k, va in pairs(cursed_keys_last_frame) do
@@ -287,15 +290,4 @@ function render_cursed_chests()
     end 
     
     --cursed_keys_last_frame = cursed_keys_current_frame
-end
-
-function draw_items()
-    map(0, 0, 0, 0, 128, 16, 1)
-    map(0, 0, 0, 0, 128, 16, 2)
-    map(0, 0, 0, 0, 128, 16, 4)
-
-    render_cursed_keys()
-    get_cursed_keys()
-    render_cursed_chests()
-    get_cursed_chests()
 end
