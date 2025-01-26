@@ -1,4 +1,4 @@
--- dank tombs tech demo
+﻿-- dank tombs tech demo
 -- by jakub wasilewski
 
 -- positively not a game yet
@@ -911,28 +911,7 @@ ind_shadow_locs={
  v(2,0),v(-2,0),v(0,0),v(0,-3)
 }
 
-function indiana:s_default(t)
- -- moving around
- --[[local moving=false
- for i=0,3 do  
-  if btn(i) then
-   if (not btn(4)) self.facing=i+1
-   self.pos+=dirs[i+1]*0.6
-   moving=true
-  end
- end 
- if moving then
-  if t%6==0 then
-   self.frm=(self.frm+1)%3
-  end
- else
-  self.frm=0
- end
- -- update shadow position
- set(self.shadow,ind_shadow_locs[self.facing])
- -- collision detection
- collide(self,"cbox",self.hit_object)]]--
-end
+
 
 function indiana:hit_object(ob)
  return event(ob,"walked_into")
@@ -966,18 +945,19 @@ light_offsets={
  function light:s_default()
   --anchor to avatar
   --self.pos=ply.pos
-  self.pos = v(player.x - cam_x, player.y)
-  --controlling the light
+  self.pos = v(player.x - cam_x, player.y - cam_y)
+  --[[controlling the light
   if btn(2) and self.bri>0.2 then
-   self.bri-=0.02
+   --self.bri-=0.02
   end
   if btn(3) and self.bri<63/44 then
-   self.bri+=0.02
+   --self.bri+=0.02
   end
+ ]]--
  end
  
  function light:range()
-  return flr(42*self.bri)
+  return flr(42*self.bri*get_brightness(0.2, 63/44))
  end
  
  function light:extents()
@@ -991,7 +971,7 @@ light_offsets={
  function light:apply()
   local p=self.pos:ints()
   local light_fill=fl_light(
-   p.x,p.y,self.bri,
+   p.x,p.y,self.bri*get_brightness(0.2, 63/44),
    blend_line
   )
   local xl,yt,xr,yb=
@@ -1163,28 +1143,7 @@ end
 -- initialization
 -------------------------------
 
-function _init()
-  player = 
-    {
-        sp = 1,
-        x = 59,
-        y = 59,
-        w = 8,
-        h = 8,
-        flip = false,
-        dx = 0,
-        dy = 0,
-        max_dx = 2,
-        max_dy = 3,
-        acc = 0.5,
-        boost = 4,
-        ani = 0,
-        running = false ,
-        jumping = false ,
-        sliding = false ,
-        landed = false  
-    }
-
+function init_light()
  init_blending(6)
  init_palettes(16)
   
@@ -1354,29 +1313,18 @@ end
 -- main loop
 -------------------------------
 
-function _update60()
-  player_update()
-    player_animate()
-
-    --simple camera
-    cam_x = player.x - 64 + player.w / 2
-    if cam_x < map_start then
-        cam_x = map_start
-    end
-    if cam_x > map_end - 128 then
-        cam_x = map_end - 128
-    end
+function update_light()
     
  -- let all objects update
  update_entities()
  -- check for collisions
  -- collision callbacks happen
  -- here
- do_collisions()
+ --do_collisions()
 end
 
 
-function _draw()
+function draw_light()
  cls()
  --camera(cam_x, 0)
  palt()
@@ -1400,8 +1348,17 @@ function _draw()
  -- background from level map
  --map(0,0,0,0,16,16) 
  
- camera(cam_x, 0)
- map(0, 0)
+ camera(cam_x, cam_y)
+
+ map(0, 0, 0, 0, 128, 16, 1)
+ map(0, 0, 0, 0, 128, 16, 2)
+ map(0, 0, 0, 0, 128, 16, 4)
+
+ render_cursed_keys()
+ get_cursed_keys()
+ render_cursed_chests()
+ get_cursed_chests()
+
  spr(player.sp, player.x, player.y, 1, 1, player.flip)
 
  -- under-entity "blob" shadows
@@ -1416,8 +1373,8 @@ function _draw()
  camera()
  lgt:apply() 
 
- camera(cam_x, 0)
- render_wall_shadows()
+ camera(cam_x, cam_y)
+ --render_wall_shadows()
  --camera(cam_x, 0)
  
  -- "real" polygonal shadows
@@ -1426,9 +1383,6 @@ function _draw()
 
     --test--
     --rect(x1r, y1r, x2r, y2r, 7)
-
-
- show_performance()
 end
 
 function show_performance()

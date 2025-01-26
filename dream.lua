@@ -1,18 +1,10 @@
 --variables
-
-gravity = 0.3
+gravity = 0.15
 friction = 0.85
 
 --number of frames player can spend in the air and still be able to jump
 max_coyote = 10
 coyote_time = 0
-
---simple camera
-cam_x = 0
-
---map limits 
-map_start = 0
-map_end = 640
 
 --test
 x1r = 0 
@@ -24,29 +16,32 @@ col_r = "no"
 col_u = "no"
 col_d = "no"
 
-  
-function _init()
+
+function player_init(spawn_x, spawn_y)
+    
     player = 
-    {
-        sp = 1,
-        x = 59,
-        y = 59,
-        w = 8,
-        h = 8,
-        flip = false,
-        dx = 0,
-        dy = 0,
-        max_dx = 2,
-        max_dy = 3,
-        acc = 0.5,
-        boost = 4,
-        ani = 0,
-        running = false ,
-        jumping = false ,
-        sliding = false ,
-        landed = false  
-    }
+        {
+            sp = 1,
+            x = spawn_x,
+            y = spawn_y,
+            w = 8,
+            h = 8,
+            flip = false,
+            dx = 0,
+            dy = 0,
+            max_dx = 2,
+            max_dy = 3,
+            acc = 0.5,
+            boost = 2,
+            ani = 0,
+            running = false ,
+            jumping = false ,
+            sliding = false ,
+            landed = false,
+            bubble_size = 1
+        }
 end
+
 
 k_left = 0
 k_right = 1
@@ -55,6 +50,7 @@ k_down = 3
 k_x = 5
 --player
 function player_update()
+    
     --physics
     player.dy += gravity
     player.dx *= friction 
@@ -136,6 +132,17 @@ function player_update()
     player.x += player.dx
     player.y += player.dy
 
+     --coyote time
+    if coyote_time > 0 then
+       coyote_time -= 1
+       if coyote_time <= 0 then
+           player.landed = false
+           coyote_time = 0
+       end
+    end
+
+    player.bubble_size = radius * radius * 64
+    --printh(player.bubble_size, "log.txt")
 end
 function player_animate()
     local shift = 48
@@ -164,39 +171,14 @@ function player_animate()
     end
 end
 
-last_time = 0
-delta_time = 0
-function _update()
-    player_update()
-    player_animate()
-
-    --simple camera
-    cam_x = player.x - 64 + player.w / 2
-    if cam_x < map_start then
-        cam_x = map_start
-    end
-    if cam_x > map_end - 128 then
-        cam_x = map_end - 128
-    end
-    camera(cam_x, 0)
-
-    --coyote time
-    if coyote_time > 0 then
-       coyote_time -= 1
-       if coyote_time <= 0 then
-           player.landed = false
-           coyote_time = 0
-       end
-    end
-end
 --update and draw
-function _draw()
-    cls()
-    map(0, 0)
+function draw_player()
+
     spr(player.sp, player.x, player.y, 1, 1, player.flip)
 
     --test--
     rect(x1r, y1r, x2r, y2r, 7)
+    
 end
 
 --collisions
