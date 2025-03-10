@@ -1,12 +1,4 @@
-﻿-- dank tombs tech demo
--- by jakub wasilewski
-
--- positively not a game yet
-
--- press 🅾️/❎ to manipulate
--- light radius, d-pad to
--- walk around
-
+﻿
 ------------------------------
 -- utilities
 ------------------------------
@@ -74,112 +66,6 @@ function kind(kob)
  return kob 
 end
 
--------------------------------
--- vectors
--------------------------------
-
--- for some stuff, we want
--- vector math - so we make
--- a vector type with all the
--- usual operations
-vec={}
-function vec.__add(v1,v2)
- return v(v1.x+v2.x,v1.y+v2.y)
-end
-function vec.__sub(v1,v2)
- return v(v1.x-v2.x,v1.y-v2.y)
-end
-function vec.__mul(v1,a)
- return v(v1.x*a,v1.y*a)
-end
-function vec.__mul(v1,a)
- return v(v1.x*a,v1.y*a)
-end
-function vec.__div(v1,a)
- return v(v1.x/a,v1.y/a)
-end
--- we use the ^ operator
--- to mean dot product
---[[function vec.__pow(v1,v2)
- return v1.x*v2.x+v1.y*v2.y
-end]]--
--- we use the ^ operator
--- to mean dot product
--- also prevents overflow
-function vec.__pow(v1,v2)
-  hi_v1x = v1.x / 64
-  lo_v1x = v1.x % 64
-  hi_v2x = v2.x / 64
-  lo_v2x = v2.x % 64
-  hi_v1y = v1.y / 64
-  lo_v1y = v1.y % 64
-  hi_v2y = v2.y / 64
-  lo_v2y = v2.y % 64
-
-  lo_sum = lo_v1x * lo_v2x + lo_v1y * lo_v2y 
-  mi_sum = hi_v1x * lo_v2x + lo_v1x * hi_v2x + lo_v1y * hi_v2y + hi_v1y * lo_v2y 
-  hi_sum = hi_v1x * hi_v2x + hi_v1y * hi_v2y
-  mi_sum += lo_sum / 64
-  lo_sum %= 64
-  hi_sum += mi_sum / 64
-  mi_sum %= 64
-  if (hi_sum >= 8) then 
-    return 32767
-  end
-  if (hi_sum <= -8) then
-    return -32768
-  end
-  return v1.x*v2.x+v1.y*v2.y
- end
-
-function vec.__unm(v1)
- return v(-v1.x,-v1.y)
-end
--- this is not really the
--- length of the vector,
--- but length squared -
--- easier to calculate,
--- and can be used for most
--- of the same stuff
-function vec.__len(v1)
- --local x,y=v1:split()
- --return x*x+y*y
- return v1 ^ v1 
-end
--- normalized vector
-function vec:norm()
- return self/sqrt(#self)
-end
--- rotated 90-deg clockwise
-function vec:rotcw()
- return v(-self.y,self.x)
-end
--- force coordinates to
--- integers
-function vec:ints()
- return v(flr(self.x),flr(self.y))
-end
--- used for destructuring,
--- i.e.:  x,y=v:split()
-function vec:split()
- return self.x,self.y
-end
--- has to be there so
--- our metatable works
--- for both operators 
--- and methods
-vec.__index = vec
-
--- creates a new vector
-function v(x,y)
- local vector={x=x,y=y}
- setmetatable(vector,vec)
- return vector
-end
-
--- vector for each cardinal
--- direction, ordered the
--- same way pico-8 d-pad is
 dirs={
  v(-1,0),v(1,0),
  v(0,-1),v(0,1)
@@ -338,149 +224,12 @@ function render_entities()
  end
 end
 
-function render_blob_shadows()
- local sh_fill=fl_blend(5)
- for e in all(entities_with.shadow) do
-  local sh=e.shadow
-  local p=e.pos+e.shadow
-  if clipbox:contains(p) then
-   cellipse(p.x,p.y,
-    sh.rx,sh.ry,sh_fill)
-  end
- end
-end
 
--------------------------------
--- collisions
--------------------------------
-
-function c_box(e)
- local b,p=e.cbox,e.pos
- return p 
-  and b:translate(p:ints()) 
-  or b
-end
-
-cqueue={}
-function collide(ent,prop,cb)
- add(cqueue,{e=ent,p=prop,cb=cb}) 
-end
-
-function do_collisions()
- for c in all(cqueue) do
-  local e=c.e
-  local eb=c_box(e)
-  for o in all(entities_with[c.p]) do
-   if o~=e then
-    local ob=c_box(o)
-    if eb:overlaps(ob) then
-     local separate=c.cb(e,o)
-     if separate then
-      local sepv=eb:sepv(ob)
-      e.pos+=sepv
-      eb=eb:translate(sepv)
-     end
-    end
-   end
-  end
- end
- cqueue={}
-end
-
-function debug_collisions()
- for e in all(entities_with.cbox) do
-  local eb=c_box(e)
-  rect(eb.xl,eb.yt,eb.xr,eb.yb,4)
- end
-end
-
-------------------------------
--- drawing shapes
-------------------------------
-
---  all shapes accept a fill
--- function which is responsible
--- for actual drawing
---  the functions just do
--- calculations and clipping
-
--- draws a polygon from an
--- array of points, using
--- ln() to fill it
--- points must be clockwise
-function ngon(pts,ln)
- local xls,xrs=ngon_setup(pts)
- for y,xl in pairs(xls) do
-  local xr=xrs[y]
-  ln(xl,xr,y)
- end
-end
-
--- like ngon, but with a
--- rectangular hole (used
--- to mask shadows)
-dummy_hole={tl={y=16000},br={}}
-function holed_ngon(pts,hole,ln)
- local xls,xrs=ngon_setup(pts)
- hole=hole or dummy_hole
- local htop,hbot,hl,hr=
-  hole.tl.y,hole.br.y,
-  hole.tl.x,hole.br.x
- for y,xl in pairs(xls) do
-  local xr=xrs[y]
-  if y<htop or y>hbot then
-   ln(xl,xr,y)
-  else
-   local cl,cr=
-    min(hl,xr),max(hr,xl)
-   if xl<=cl then
-    ln(xl,cl,y)
-   end
-   if cr<=xr then
-    ln(cr,xr,y)
-   end
-  end
- end
-end
-
--- sets up min/max x of
--- each polygon line
-function ngon_setup(pts)
- local xls,xrs={},{} 
- local npts=#pts
- for i=0,npts-1 do
-  ngon_edge(
-   pts[i+1],pts[(i+1)%npts+1],
-   xls,xrs
-  )
- end
- return xls,xrs
-end
-
-function ngon_edge(a,b,xls,xrs)
- local ax,ay=a.x,round(a.y)
- local bx,by=b.x,round(b.y)
- if (ay==by) return
-
- local x,dx=
-  ax,(bx-ax)/abs(by-ay)
- if ay<by then
-  for y=ay,by do
-   xrs[y]=x
-   x+=dx
-  end
- else
-  for y=ay,by,-1 do
-   xls[y]=x
-   x+=dx
-  end
- end
-end
 
 -- draws a filled rectangle
 -- with a custom fill fn
 function crect(x1,y1,x2,y2,ln)
- x1,x2=max(x1,0),mid(x2,127)
+ x1,x2=max(x1,0),min(x2,127)
  y1,y2=max(y1,0),min(y2,127)
  if (x2<x1 or y2<y1) return
  for y=y1,y2 do
@@ -556,10 +305,6 @@ end
 -- blend_line will need
 function init_blending(nlevels)
  -- tabulate sqrt() for speed
- _sqrt={}
- for i=0,4096 do
-  _sqrt[i]=sqrt(i)
- end
 
  -- populate look-up tables
  -- for blending based on
@@ -571,51 +316,81 @@ function init_blending(nlevels)
   local addr=0x4300+lv*0x100
   local sx=lv-1
   for c1=0,15 do
-   local nc=sget(sx,c1)
+   local nc=sget(sx + 16 * (level_index % 6),c1)
    local topl=shl(nc,4)
    for c2=0,15 do
     poke(addr,
-     topl+sget(sx,c2))
+     topl+sget(sx+ 16 * (level_index % 6),c2))
     addr+=1
    end
   end
  end 
 end
 
+_sqrt={}
+for i=0,4096 do
+ _sqrt[i]=sqrt(i)
+end
+_shl6 = {}
+for i = 0, 127 do
+ _shl6[i] = shl(i, 6)
+end 
+
 function fl_blend(l)
  local lutaddr=0x4300+shl(l,8)
+ --local lutaddr = 0x4300 + _shl8[l]
     return function(x1,x2,y)
+      --printh(x1.." "..x2.." "..y, "log.txt")
+      if true then 
      local laddr=lutaddr
-     local yaddr=0x6000+shl(y,6)
+     --printh(laddr.."laddr", "log.txt")
+     --local yaddr=0x6000+shl(y,6)
+     local yaddr = 0x6000 + _shl6[y]
      local saddr,eaddr=
-      yaddr+band(shr(x1+1,1),0xffff),
-      yaddr+band(shr(x2-1,1),0xffff)
+      --yaddr+band(shr(x1+1,1),0xffff),
+      --yaddr + shr(x1 + 1, 1) & 0xffff,
+      max(0x6001, yaddr + ((x1 + 1) >> 1) & 0xffff), 
+      --yaddr + band(shr(x2-1,1),0xffff)
+      --yaddr + shr(x2 - 1, 1) & 0xffff
+      min(0x7ffe, yaddr + ((x2 - 1) >> 1) & 0xffff)
      -- odd pixel on left?
-     if band(x1,1.99995)>=1 then
+     --if 0x6001 <= saddr and band(x1,1.99995)>=1 then -- 10% CPu
+     if (x1 & 1) >= 1 then --and 0x6001 <= saddr then 
       local a=saddr-1
       local v=peek(a)
       poke(a,
-       band(v,0xf) +
-       band(peek(bor(laddr,v)),0xf0)
+      --band(v,0xf) +
+      (v & 0xf) | 
+      --band(peek(bor(laddr,v)),0xf0)
+      --band(peek(laddr | v), 0xf0)
+      (peek(laddr | v) & 0xf0)
       )
      end
      -- full bytes
-     for addr=saddr,eaddr do
+     --for addr=max(saddr, 0x6000), min(eaddr,0x7fff) do -- 30% CPu 
+      for addr = saddr, eaddr do 
+      --if addr >= 0x6000 and addr <=0x7fff then 
       poke(addr,
        peek(
-        bor(laddr,peek(addr))
+        --bor(laddr,peek(addr))
+        laddr | peek(addr)
        )
       )
+      --end
      end
      -- odd pixel on right?
-     if band(x2,1.99995)<1 then
+     --if 0x7ffe >= eaddr and band(x2,1.99995)<1 then -- 10% CPu
+     if (x2 & 1) < 1 then --and 0x7ffe >= eaddr then 
       local a=eaddr+1
       local v=peek(a)
       poke(a,
-       band(peek(bor(laddr,v)),0xf) +
-       band(v,0xf0)
+      --band(peek(bor(laddr,v)),0xf) |
+      (peek(laddr | v) & 0x0f) |
+      --band(v,0xf0)
+      (v & 0xf0)
       )
      end
+    end
     end
 end
 
@@ -631,10 +406,10 @@ end
 -- brightest, and 6 is the
 -- darkest (pitch black)
 light_rng={
- 10*42,18*42,
- 26*42,34*42,
- 42*42,
-}
+ 10*42,17*42,
+ 24*42,32*42,
+ 39*42,
+} -- 10, 18, 26, 34, 42 
 -- special "guard" value
 -- to ensure nothing can be
 -- light level 0 without ifs
@@ -666,7 +441,7 @@ function fl_light(lx,ly,brightness,ln)
   -- brightness range multiplier
   -- + per line flicker effect
   local mul=
-   brightnessf*
+   brightnessf * 
     (rnd(0.16)+0.92)
   -- calculate light levels
   -- at left end, right end,
@@ -675,7 +450,8 @@ function fl_light(lx,ly,brightness,ln)
    ysq+ox*ox,
    ysq+oe*oe
   for lv=5,0,-1 do
-   local r=band(light_rng[lv]*mul,0xffff)
+   --local r=band(light_rng[lv]*mul,0xffff)
+   local r = (light_rng[lv] * mul) & 0xffff
    if not slv and srng>=r then
     slv=lv+1
     if (elv) break
@@ -697,7 +473,8 @@ function fl_light(lx,ly,brightness,ln)
   -- light level within line
   local mind=max(x1-lx,lx-x2)
   for lv=hlv-1,1,-1 do
-   local brng=band(light_rng[lv]*mul,0xffff)
+   --local brng=band(light_rng[lv]*mul,0xffff)
+   local brng = (light_rng[lv] * mul) & 0xffff
    local brp=_sqrt[brng-ysq]
    brkpts[lv]=brp
    if not brp or brp<mind then
@@ -712,24 +489,32 @@ function fl_light(lx,ly,brightness,ln)
   -- start of most-lit segment
   -- decreasing light lv
   -- (brightness increasing)
-  for l=slv,llv+1,-1 do
-   xe=lx-brkpts[l-1]
-   fills[l](xs,xe-1,y)
-   xs=xe
+  if nil ~= slv then
+    for l=slv,llv+1,-1 do
+    xe=ceil(lx-brkpts[l-1])
+    --printh("xe slv"..xe, "log.txt")
+    fills[l](xs,xe-1,y)
+    xs=xe
+    end
   end
   -- from most-lit zone
   -- to last break point
   -- increasing light lv
   -- (brightness decreasing)
-  for l=llv,elv-1 do 
-   xe=lx+brkpts[l]
-   fills[l](xs,xe-1,y)
-   xs=xe
+  if nil ~= elv then 
+    for l=llv,elv-1 do 
+    xe=ceil(lx+brkpts[l])
+    --printh("xe elv"..xe, "log.txt")
+    fills[l](xs,xe-1,y)
+    xs=xe
+    end
   end
   -- last segment from
   -- last breakpoint to the
   -- right bound
-  fills[elv](xs,x2,y)
+  if nil ~= elv then 
+    fills[elv](xs,x2,y)
+  end
  end
 end
 
@@ -759,174 +544,7 @@ function set_palette(no)
  end
 end
 
-function dim_object(o)
- local lcoeff=(o.pos-lgt.pos).y/25
- if lcoeff>0 then
-  local pt=mid(flr(lcoeff/0.1),0,6)
-  set_palette(8+pt)
- end
-end
 
--------------------------------
--- shadowcasting by walls
--------------------------------
-
-function render_wall_shadows()
- local render_one=
-  render_shadow_fn()
- for e in all(entities_with.walls) do
-  foreach(e.walls,render_one)
- end
-end
-
-rsh_corners={
- v(-1,-1),v(1,-1),v(1,1),v(-1,1),
- v(-1,-1),v(1,-1),v(1,1),v(-1,1),
-}
-function render_shadow_fn()
- -- remember lighting info
- local p,rng=lgt.pos:ints(),lgt:range()
- x1r = p.x
- x2r = p.x + 5
- y1r = p.y
- y2r = p.y + 5
- local rngsq=rng*rng
- local black=fl_color(0)
- 
- -- return function using it
- return function(wall)
-     local s,e=wall.s,wall.e
-     local dist=wall.d^(p-s) 
-     if (dist<=0) return 
-     local ds,de=s-p,e-p
-     if (#ds>rngsq and #de>rngsq) return
-     local horiz=wall.d.x~=0
-     
-     local cs,ce=
-      rng/max(abs(ds.x),abs(ds.y)),
-      rng/max(abs(de.x),abs(de.y))
-     local ps,pe=
-      ds*cs,de*ce
-
-     local qs,qe=quadrant(ps),quadrant(pe)
-     if (qs<qe) qs+=4
-     
-     local pts={s,e,p+pe}
-  for q=qe,qs-1 do
-      add(pts,p+rsh_corners[q]*rng)
-     end
-     add(pts,p+ps)
-     
-  if wall.h then
-      holed_ngon(pts,wall.h,black)
-     else
-      
-      --ngon(pts,black)
-     end
- end
-end
-
--- returns the quadrant a given
--- point is in. quadrants start
--- at 1 (left) and go clockwise
-function quadrant(v)
- if abs(v.x)>abs(v.y) then
-  return v.x>0 and 3 or 1
- else
-  return v.y>0 and 4 or 2
- end
-end
-
--------------------------------
--- solids (light obscuring)
--------------------------------
-
-gobs={
-    sd_spire={
-        sprite={n=67,w=2,h=4},
-        tile=115,
-        off=v(8,4),
-        walls={
-         {-8,0,8,0,3},
-         {8,0,8,-15,1},
-         {8,-15,-8,-15,4},
-         {-8,-15,-8,0,2}
-        },
-        hole={-4,-32,3,-15},
-        cbox=make_box(-8,-15,7,0)
-    }
-}
-
-solid=kind({
- extends=entity
-})
-
-function solid:create()
- local def,pos=
-  self.def,self.pos
- 
- self.cbox=self.def.cbox
- local hole=self.def.hole
- if hole then
-  hole={
-   tl=pos+v(hole[1],hole[2]),
-   br=pos+v(hole[3],hole[4])
-  }
- end
- self.walls={}
- for wd in all(self.def.walls) do
-  add(self.walls,{
-   s=pos+v(wd[1],wd[2]),
-   e=pos+v(wd[3],wd[4]),
-   d=dirs[wd[5]],
-   h=hole
-  })
- end
- entity.create(self)
-end
-
-solid.walked_into=true
-
-function solid:render()
- local s=self.def.sprite
- local spos=
-  self.pos+v(-s.w*4,-s.h*8)  
- -- dynamic lighting
- dim_object(self)
- spr(s.n,spos.x,spos.y,s.w,s.h,self.flipped)
-end
-
--------------------------------
--- player object
--------------------------------
-
-indiana=kind({
- extends=entity,
- frm=0,
- shadow={x=0,y=0,rx=8,ry=4},
- shoff=v(0,0),
- cbox=make_box(-3,-5,4,1)
-})
-ind_shadow_locs={
- v(2,0),v(-2,0),v(0,0),v(0,-3)
-}
-
-
-
-function indiana:hit_object(ob)
- return event(ob,"walked_into")
-end
-
-ind_sprites={
- 195,195,233,227 
-}
-function indiana:render()
- --[[local pos=self.pos
- local sprite=
-  ind_sprites[self.facing]+
-   self.frm*2
- spr(sprite,pos.x-8,pos.y-16,2,2,self.facing==1)]]--
-end
 
 -------------------------------
 -- light object
@@ -945,19 +563,12 @@ light_offsets={
  function light:s_default()
   --anchor to avatar
   --self.pos=ply.pos
-  self.pos = v(player.x - cam_x + player.w / 2, player.y - cam_y + player.h / 2)
-  --[[controlling the light
-  if btn(2) and self.bri>0.2 then
-   --self.bri-=0.02
-  end
-  if btn(3) and self.bri<63/44 then
-   --self.bri+=0.02
-  end
- ]]--
+  self.pos = v(ceil(player.x - cam_x) + player.w / 2, flr(player.y) - ceil(cam_y) + player.h / 2)
+  
  end
  
  function light:range()
-  return flr(42*self.bri*get_brightness(0.2, 63/44))
+  return flr(42*self.bri*get_brightness(0.22, 63/44))
  end
  
  function light:extents()
@@ -971,7 +582,7 @@ light_offsets={
  function light:apply()
   local p=self.pos:ints()
   local light_fill=fl_light(
-   p.x,p.y,self.bri*get_brightness(0.2, 63/44),
+   p.x,p.y,self.bri*get_brightness(0.22, 63/44),
    blend_line
   )
   local xl,yt,xr,yb=
@@ -980,164 +591,8 @@ light_offsets={
    light_fill)
  end
  
--------------------------------
--- ghostly watcher
--------------------------------
 
-watcher=kind({
- extends=entity,
- shadow={x=0,y=0,rx=8,ry=4}
-})
- function watcher:render(t)
-  local z=sin(t*0.007)*3-3
-  local p=self.pos-v(0,z)-
-   v(8,24)
-  spr(14,p.x,p.y,2,3) 
- end
 
--------------------------------
--- building a room
--------------------------------
-
-wall=kind({
- walked_into=true,
- extends=entity
-})
- 
-function build_room(mx,my)
- local obtab={}
- for k,gob in pairs(gobs) do
-  obtab[gob.tile]=gob
- end
- 
- for ty=0,15 do
-  for tx=0,15 do
-   local tile=mget(mx+tx,my+ty)
-   local spawn=obtab[tile]
-   if spawn then 
-    solid:new({
-     pos=v(tx,ty)*8+spawn.off,
-     def=spawn
-    })
-    mset(tx,ty,128)
-   else
-    mset(tx,ty,tile)
-   end
-  end
- end 
-end
-
-function flags(pos,mask)
- local x,y=
-  mid(pos.x,0,16),
-  mid(pos.y,0,15)
- return band(fget(mget(x,y)),mask)
-end
-
-function process_walls()
- process_walls_with(v(0,1),v(1,0),4,3)
- process_walls_with(v(0,1),v(1,0),8,4)
- process_walls_with(v(1,0),v(0,1),1,1)
- process_walls_with(v(1,0),v(0,1),2,2)
- find_wall_fronts()
-end
-
-function process_walls_with(dout,din,mask,wdir)
- for row=0,15 do
-  local l,c,bv,prv=
-   dout*row-din*2,-2,0
-  repeat
-      repeat
-       prv=bv
-       l+=din
-       c+=1
-       bv=flags(l,mask)
-      until c==16 or bv~=prv
-      if prv~=0 then
-       add_wall(sl,l,wdir)
-      end
-      sl=l
-  until c==16
- end
-end
-
-wparams={
- {f=v(0,5),t=v(7,4),
-  we=v(0,4)},
- {f=v(7,5),t=v(0,4),
-  we=v(7,4),wi=true},
- {f=v(0,5),t=v(-1,13),
-  we=v(-1,5),h=v(-1,1),wi=true},
- {f=v(0,12),t=v(-1,0),
-  we=v(-1,12),h=v(-1,14)},
-}
-function add_wall(from,to,dr)
- local d,ps=dirs[dr],wparams[dr]
- local cs,ce,co=
-  from*8+ps.f,
-  to*8+ps.we,
-  to*8+ps.t
- local wbox=make_box(cs.x,cs.y,co.x,co.y)
- local hole
- if ps.h then
-  local ch=to*8+ps.h
-  local hbox=make_box(cs.x,cs.y,ch.x,ch.y)
-  hole={
-   tl=v(hbox.xl,hbox.yt),
-   br=v(hbox.xr,hbox.yb)
-  }
- end
- wall:new({
-  cbox=wbox,
-  walls={
-   {
-    s=ps.wi and ce or cs,
-    e=ps.wi and cs or ce,
-    d=-d,
-    h=hole   
-   }
-  }
- })
-end
-
--------------------------------
--- front-facing walls
--------------------------------
-
--- front parts of walls are
--- drawn as entities to let
--- us darken them when they
--- should be in shadow
-wallfront=kind({
- extends=entity
-})
- function wallfront:render()
-  dim_object(self)
-  map(self.mx,self.my,
-      self.pos.x,self.pos.y-16,
-      self.mw,2)      
- end
- 
- 
-function find_wall_fronts()
- for y=0,14 do
-  local pc,c,sx=0
-  for x=0,16 do
-   c=flags(v(x,y),16)+
-     flags(v(x,y+1),16)
-   if c~=pc or c==16 then
-    if pc==32 then
-     w=wallfront:new({
-      mx=sx,my=y,mw=x-sx,
-      pos=v(sx,y+2)*8
-     })
-    end
-    sx=x
-   end
-   pc=c
-  end
- end
-end
 
 -------------------------------
 -- initialization
@@ -1147,167 +602,16 @@ function init_light()
  init_blending(6)
  init_palettes(16)
   
- build_room(0,0)
- process_walls()
 
- ply=indiana:new({
-  pos=v(64,120),facing=3
- })
  lgt=light:new({
  -- pos=v(64,120),bri=1
     pos=v(59, 59), bri = 1
  }) 
- watcher:new({
-  pos=v(112,24)
- })
+
 end
 
--------------------------------
--- room generation
--------------------------------
 
--- node
---  pos : vector
---  dir : vector/dirno
---  w : int
 
-function generate_room()
- --clear
- g_rfill(make_box(0,0,18,19),156)
- --prepare
- local lx,ux,lw,uw=
-  flr(rnd(12)+1),
-  flr(15-rnd(11)),
-  flr(rnd(0)+2),
-  flr(rnd(0)+2)
-  
- carve_corridor(
-  {pos=v(lx,18),w=lw,d=v(0,-1)},
-  {pos=v(ux,0),w=uw,d=v(0,1)}
- ) 
- --finishing
- g_connect_up(fpats)
- g_connect_up(cpats)
- g_randomize(reps)
- 
- -- indiana
- ply=indiana:new({
-  pos=v(lx*8+lw*4,120),facing=3
- })
-end
-
-function corr_box(n)
- local p,d,w=n.pos,n.d,n.w
- return vec_box(
-  p,p+d*w+d:rotcw()*w
- )
-end
-
-function carve_corridor(n1,n2)
- n1,n2=set({},n1),set({},n2)
- local n,b1,b2
- -- extend towards each other
- while true do
-  b1,b2=
-   corr_box(n1),
-   corr_box(n2)
-  g_rfill(b1,128)
-  g_rfill(b2,128)
-  if ((n2.pos-n1.pos)^n1.d<=n2.w) break  
-  n=rnd()>0.5 and n1 or n2
-  n.pos+=n.d
- end
- -- connect together
- local cbox=make_box(
-  min(b1.xl,b2.xl),
-  min(b1.yt,b2.yt),
-  max(b1.xr,b2.xr),
-  max(b1.yb,b2.yb)
- )
- g_rfill(cbox,128)
-end
-
-function g_rfill(box,tile)
- for x=box.xl,box.xr-1 do
-  for y=box.yt,box.yb-1 do
-   mset(x,y,tile)
-  end
- end
-end
-
-fpats={
- --fronts
- {0,0,32,0,1,0, 187},
- {0,0,32,0,2,0, 171},
-}
-cpats={
- --fronts
- ---right
- {0,0,16,0,1,16,1,0,0, 174},
- {0,0,16,1,0,0, 190},
- ---left
- {0,0,16,0,1,16,-1,0,0, 173},
- {0,0,16,-1,0,0, 189},
- --walls
- ---inner corners
- {0,0,32,1,0,32,0,1,32,1,1,16, 132},
- {0,0,32,-1,0,32,0,1,32,-1,1,16, 134},
- {0,0,32,1,0,0,0,1,32,1,1,32, 164},
- {0,0,32,-1,0,0,0,1,32,-1,1,32, 166},
- ---outer corners
- {0,0,32,0,1,16,1,0,0, 185},
- {0,0,32,0,1,16,-1,0,0, 184},
- {0,0,0, 0,1,32, -1,1,0, 168}, 
- {0,0,0, 0,1,32, 1,1,0, 169}, 
- ---straights
- {0,0,32,0,1,16, 133},
- {0,0,32,1,0,0, 148},
- {0,0,32,1,0,16, 148},
- {0,0,32,-1,0,0, 150},
- {0,0,32,-1,0,16, 150},
- {0,0,0, 0,1,32, 165} 
-}
-function g_cmatch(x,y,m)
- x,y=mid(x,0,15),mid(y,0,15)
- local v=band(fget(mget(x,y)),0x30)
- return v==m
-end
-
-function g_connect_up(pats)
- for x=0,15 do
-  for y=0,15 do
-   for p in all(pats) do
-    local match=true
-    for n=3,#p,3 do
-     if not g_cmatch(x+p[n-2],y+p[n-1],p[n]) then
-      match=false
-      break
-     end 
-    end
-    if match then
-     mset(x,y,p[#p])
-     break
-    end
-   end
-  end
- end 
-end
-
-reps={
- r128={128,144,160,176},
- r187={187,187,188},
- r171={171,171,172}
-}
-function g_randomize(reps)
- for x=0,15 do
-  for y=0,15 do
-   local r=reps["r"..mget(x,y)]
-   if r then 
-    mset(x,y,r[flr(rnd(#r)+1)])
-   end
-  end
- end
-end
 
 -------------------------------
 -- main loop
@@ -1332,58 +636,61 @@ function draw_light()
  palt(0, true)
  
  -- clip to lit rectangle
- local xl,yt,xr,yb=
+ xl,yt,xr,yb=
   lgt:extents()
-  x1r = xl
-  x2r = xr
-  y1r = yt
-  y2r = yb
- clip(xl,yt,xr-xl+1,yb-yt+1) 
+
+ clip(xl,yt,xr-xl+1,yb-yt+1) --clip code 
  -- store clipping coords
  -- globally to let us
  -- not draw certain objects
  clipbox=make_box(
   xl-8,yt,xr+8,yb+24
  )
- -- background from level map
- --map(0,0,0,0,16,16) 
- 
+
+
+ smooth = 4
+ step = 4
+ offset_x += (flr(player.x) - last_x) / step / smooth
+ offset_y += (flr(player.y) - last_y) / step / smooth
+ last_x += (flr(player.x)- last_x) / smooth
+ last_y += (flr(player.y) - last_y) / smooth
+ camera(cam_x - offset_x, cam_y - offset_y)
+ map(0, 0, 0, 0, 128, 128, 8)
  camera(cam_x, cam_y)
 
 
- map(0, 0, 0, 0, 128, 128, 1)
- map(0, 0, 0, 0, 128, 128, 2)
- map(0, 0, 0, 0, 128, 128, 4)
+ map(0, 0, 0, 0, 128, 128, 7) -- draw objects with flag 0, 1 & 2
 
- render_cursed_keys()
+
+ 
+ render_cursed_keys(1)
  get_cursed_keys()
- render_cursed_chests()
+ render_cursed_chests(1)
  get_cursed_chests()
+ 
+ 
+ --camera()
+ camera(cam_x - min_x, cam_y - min_y)
+ render_particles()
 
- spr(player.sp, player.x, player.y, 1, 1, player.flip)
 
- -- under-entity "blob" shadows
- --render_blob_shadows() 
- -- entities themselves
- render_entities()
- -- "foreground" layer of level
- -- (parts that need to be
- --  on top of entities)
- --map(0,0,0,0,16,16,128) 
- -- apply lighting to all that
+
  camera()
+
  lgt:apply() 
+ 
+ camera(cam_x, cam_y)
+ render_cursed_keys(2)
+ render_cursed_chests(2)
+ spr(player.sp, flr(player.x), flr(player.y), 1, 1, player.flip)
 
  camera(cam_x, cam_y)
- --render_wall_shadows()
- --camera(cam_x, 0)
- 
- -- "real" polygonal shadows
- 
- 
+ render_smoke()
+ render_foam()
 
-    --test--
-    --rect(x1r, y1r, x2r, y2r, 7)
+ render_ui_keys()
+ render_ui_chests()
+
 end
 
 function show_performance()

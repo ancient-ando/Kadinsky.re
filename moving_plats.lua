@@ -195,7 +195,7 @@ function collide_event(a1,a2)
 		return true
 	end]]--
 	
-	sfx(2) -- generic bump sound
+	psfx(2) -- generic bump sound
 	
 	return false
 end

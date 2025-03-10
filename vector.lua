@@ -27,38 +27,42 @@ function vec.__div(v1,a)
 end
 -- we use the ^ operator
 -- to mean dot product
---[[function vec.__pow(v1,v2)
+function vec.__pow(v1,v2)
  return v1.x*v2.x+v1.y*v2.y
-end]]--
+end
 -- we use the ^ operator
 -- to mean dot product
 -- also prevents overflow
-function vec.__pow(v1,v2)
-  hi_v1x = v1.x / 64
-  lo_v1x = v1.x % 64
-  hi_v2x = v2.x / 64
-  lo_v2x = v2.x % 64
-  hi_v1y = v1.y / 64
-  lo_v1y = v1.y % 64
-  hi_v2y = v2.y / 64
-  lo_v2y = v2.y % 64
+--[[function vec.__pow(v1,v2)
+  hi_v1x = flr(v1.x >> 6) -->> 6
+  lo_v1x = v1.x % 64 -- & 63
+  hi_v2x = flr(v2.x >> 6) -->> 6
+  lo_v2x = v2.x % 64 -- & 63
+  hi_v1y = flr(v1.y >> 6) -->> 6
+  lo_v1y = v1.y % 64 -- & 63
+  hi_v2y = flr(v2.y >> 6) -->> 6
+  lo_v2y = v2.y % 64 -- & 63
 
   lo_sum = lo_v1x * lo_v2x + lo_v1y * lo_v2y 
   mi_sum = hi_v1x * lo_v2x + lo_v1x * hi_v2x + lo_v1y * hi_v2y + hi_v1y * lo_v2y 
   hi_sum = hi_v1x * hi_v2x + hi_v1y * hi_v2y
-  mi_sum += lo_sum / 64
-  lo_sum %= 64
-  hi_sum += mi_sum / 64
-  mi_sum %= 64
+  mi_sum += flr(lo_sum >> 6) -->> 6
+  lo_sum = lo_sum % 64 -- & 63
+  hi_sum += flr(mi_sum >> 6) -- >> 6
+  mi_sum = mi_sum % 64 -- & 63
+  printh("vector dot ("..tostr(v1.x)..", "..tostr(v1.y)..") ("..tostr(v2.x)..", "..tostr(v2.y)..") ", "log.txt")
   if (hi_sum >= 8) then 
+    printh("32767", "log.txt")
     return 32767
   end
   if (hi_sum <= -8) then
-    return -32768
+    printh("-32766", "log.txt")
+    return -32766
   end
-  return v1.x*v2.x+v1.y*v2.y
+  printh((hi_sum * 64 + mi_sum) * 64 + lo_sum, "log.txt")
+  return (hi_sum * 64 + mi_sum) * 64 + lo_sum
  end
-
+]]--
 function vec.__unm(v1)
  return v(-v1.x,-v1.y)
 end
