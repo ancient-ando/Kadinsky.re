@@ -1,6 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
+--special thanks to krajzeg for their danktomb shader. licensed under cc by-nc-sa 4.0.
 #include vector.lua
 #include player_circle.lua
 #include light.lua

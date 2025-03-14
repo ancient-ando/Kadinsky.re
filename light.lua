@@ -207,7 +207,7 @@ end
 
 -- renders entities, sorted by
 -- y to get proper occlusion
-function render_entities()
+--[[function render_entities()
  ysorted={}
  
  for d in all(entities_with.render) do
@@ -222,7 +222,7 @@ function render_entities()
   end
   reset_palette()
  end
-end
+end]]--
 
 
 
@@ -535,17 +535,17 @@ function init_palettes(n)
  end
 end
 
-function reset_palette()
+--[[function reset_palette()
  pal()
  palt(3,true)
  palt(0,false)
-end
+end]]--
 
-function set_palette(no)
+--[[function set_palette(no)
  for c,nc in pairs(pals[no]) do
   pal(c,nc)
  end
-end
+end]]--
 
 
 
