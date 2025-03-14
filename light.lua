@@ -643,6 +643,7 @@ function draw_light()
   lgt:extents()
 
  clip(xl,yt,xr-xl+1,yb-yt+1) --clip code 
+ -- printh("clip "..xl.." "..yt.." "..(xr-xl+1).." "..(yb-yt+1), "log.txt")
  -- store clipping coords
  -- globally to let us
  -- not draw certain objects
@@ -657,15 +658,29 @@ function draw_light()
  offset_y += (flr(player.y) - last_y) / step / smooth
  last_x += (flr(player.x)- last_x) / smooth
  last_y += (flr(player.y) - last_y) / smooth
- camera(cam_x - offset_x, cam_y - offset_y)
- map(0, 0, 0, 0, 128, 128, 8)
+ d_x = cam_x - offset_x 
+ d_y = cam_y - offset_y
+ i_x = flr(d_x / 8)
+ i_y = flr(d_y / 8)
+ d_x = d_x % 8
+ d_y = d_y % 8
+ --camera(cam_x - offset_x, cam_y - offset_y)
+ --map(0, 0, 0, 0, 128, 128, 8)
+ camera(d_x, d_y)
+ map(i_x, i_y, 0, 0, 16, 16, 8)
+
+ d_x = cam_x
+ d_y = cam_y
+ i_x = flr(d_x / 8)
+ i_y = flr(d_y / 8)
+ d_x = d_x % 8
+ d_y = d_y % 8
+ --camera(cam_x, cam_y)
+ --map(0, 0, 0, 0, 128, 128, 7) -- draw objects with flag 0, 1 & 2
+ camera(d_x, d_y)
+ map(i_x, i_y, 0, 0, 16, 16, 7)
+
  camera(cam_x, cam_y)
-
-
- map(0, 0, 0, 0, 128, 128, 7) -- draw objects with flag 0, 1 & 2
-
-
- 
  render_cursed_keys(1)
  get_cursed_keys()
  render_cursed_chests(1)
@@ -676,10 +691,7 @@ function draw_light()
  camera(cam_x - min_x, cam_y - min_y)
  render_particles()
 
-
-
  camera()
-
  lgt:apply() 
  
  camera(cam_x, cam_y)

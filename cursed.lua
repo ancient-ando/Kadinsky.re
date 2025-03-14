@@ -93,6 +93,7 @@ function render_ui_keys()
         end
         
     end
+    clip(xl,yt,xr-xl+1,yb-yt+1)
 end
 
 ui_chest_timer = 0
@@ -109,6 +110,7 @@ function render_ui_chests()
     for i = num_cursed_chests + flr(ui_chest_timer / 10) % 2, num_cursed_chests + num_opened_chests - 1, 1 do
         spr(154, cam_x + i * 10 + 3, cam_y + 12, 1, 1)
     end
+    clip(xl,yt,xr-xl+1,yb-yt+1)
 end
 function render_cursed_keys(pass)
     local cursed_keys_current_frame = {}

@@ -55,7 +55,8 @@ function _draw()
     print ("Cweeperk - sOUND DESIGN, NARRATION DESIGN & ui", 110, 88 + cam_y)    
     print ("Loumi - pIXEL ART ", 160, 96 + cam_y)
     print ("and Ando <ancient> - pROGRAMMING, VFX & PRODUCER ", 130, 104 + cam_y)
-end
+    end
+    clip(xl,yt,xr-xl+1,yb-yt+1)
 end
 
 function show_performance()
@@ -69,4 +70,5 @@ function show_performance()
     print(perf,0,122+cam_y,0)
     print(perf,0,121+cam_y,fps==60 and 7 or 8)
     camera()
+    clip(xl,yt,xr-xl+1,yb-yt+1)
 end
