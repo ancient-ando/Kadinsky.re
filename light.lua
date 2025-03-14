@@ -355,7 +355,7 @@ function fl_blend(l)
       min(0x7ffe, yaddr + ((x2 - 1) >> 1) & 0xffff)
      -- odd pixel on left?
      --if 0x6001 <= saddr and band(x1,1.99995)>=1 then -- 10% CPu
-     if (x1 & 1) >= 1 then --and 0x6001 <= saddr then 
+     if (x1 & 1.99995) >= 1 then --and 0x6001 <= saddr then 
       local a=saddr-1
       local v=peek(a)
       poke(a,
@@ -380,7 +380,7 @@ function fl_blend(l)
      end
      -- odd pixel on right?
      --if 0x7ffe >= eaddr and band(x2,1.99995)<1 then -- 10% CPu
-     if (x2 & 1) < 1 then --and 0x7ffe >= eaddr then 
+     if (x2 & 1.99995) < 1 then --and 0x7ffe >= eaddr then 
       local a=eaddr+1
       local v=peek(a)
       poke(a,
@@ -471,13 +471,16 @@ function fl_light(lx,ly,brightness,ln)
   --  in light-space)
   -- and lowest(brightest)
   -- light level within line
-  local mind=max(x1-lx,lx-x2)
+  --local mind=max(x1-lx,lx-x2)
+  local mind = min(x1 - lx, lx - x2)
+  --printh("mind ".. mind, "log.txt")
   for lv=hlv-1,1,-1 do
    --local brng=band(light_rng[lv]*mul,0xffff)
    local brng = (light_rng[lv] * mul) & 0xffff
    local brp=_sqrt[brng-ysq]
+   --if brp then printh("brp ".. brp, "log.txt") end 
    brkpts[lv]=brp
-   if not brp or brp<mind then
+   if not brp or brp>-mind then
     llv=lv+1
     break
    end
@@ -632,8 +635,8 @@ function draw_light()
  cls()
  --camera(cam_x, 0)
  palt()
-
  palt(0, true)
+ 
  
  -- clip to lit rectangle
  xl,yt,xr,yb=
@@ -666,7 +669,7 @@ function draw_light()
  render_cursed_keys(1)
  get_cursed_keys()
  render_cursed_chests(1)
- get_cursed_chests()
+ get_cursed_chests()  
  
  
  --camera()
