@@ -313,7 +313,7 @@ function init_blending(nlevels)
   -- light luts are stored in
   -- memory directly, table
   -- indexing is costly
-  local addr=0x4300+lv*0x100
+  local addr = 0x4300 + lv * 0x100
   local sx=lv-1
   for c1=0,15 do
    local nc=sget(sx + 16 * (level_index % 6),c1)
@@ -337,60 +337,40 @@ for i = 0, 127 do
 end 
 
 function fl_blend(l)
- local lutaddr=0x4300+shl(l,8)
- --local lutaddr = 0x4300 + _shl8[l]
+ local lutaddr = 0x4300 + shl(l, 8)
     return function(x1,x2,y)
-      --printh(x1.." "..x2.." "..y, "log.txt")
-      if true then 
      local laddr=lutaddr
-     --printh(laddr.."laddr", "log.txt")
-     --local yaddr=0x6000+shl(y,6)
      local yaddr = 0x6000 + _shl6[y]
      local saddr,eaddr=
-      --yaddr+band(shr(x1+1,1),0xffff),
-      --yaddr + shr(x1 + 1, 1) & 0xffff,
-      max(0x6001, yaddr + ((x1 + 1) >> 1) & 0xffff), 
-      --yaddr + band(shr(x2-1,1),0xffff)
-      --yaddr + shr(x2 - 1, 1) & 0xffff
-      min(0x7ffe, yaddr + ((x2 - 1) >> 1) & 0xffff)
-     -- odd pixel on left?
-     --if 0x6001 <= saddr and band(x1,1.99995)>=1 then -- 10% CPu
-     if (x1 & 1.99995) >= 1 then --and 0x6001 <= saddr then 
-      local a=saddr-1
-      local v=peek(a)
-      poke(a,
-      --band(v,0xf) +
-      (v & 0xf) | 
-      --band(peek(bor(laddr,v)),0xf0)
-      --band(peek(laddr | v), 0xf0)
-      (peek(laddr | v) & 0xf0)
-      )
-     end
+      mid(0x6001, 0x7ffe, yaddr + ((x1 + 1) >> 1) & 0xffff), 
+      mid(0x7ffe, 0x6001, yaddr + ((x2 - 1) >> 1) & 0xffff)
+     
      -- full bytes
-     --for addr=max(saddr, 0x6000), min(eaddr,0x7fff) do -- 30% CPu 
       for addr = saddr, eaddr do 
-      --if addr >= 0x6000 and addr <=0x7fff then 
       poke(addr,
-       peek(
-        --bor(laddr,peek(addr))
-        laddr | peek(addr)
+       @(
+        laddr | @(addr)
        )
       )
-      --end
+     end
+     -- odd pixel on left?
+     if (x1 & 1.99995) >= 1 then 
+      local a=saddr-1
+      local v = @(a)
+      poke(a,
+      (v & 0xf) | 
+      (@(laddr | v) & 0xf0)
+      )
      end
      -- odd pixel on right?
-     --if 0x7ffe >= eaddr and band(x2,1.99995)<1 then -- 10% CPu
-     if (x2 & 1.99995) < 1 then --and 0x7ffe >= eaddr then 
+     if (x2 & 1.99995) < 1 then 
       local a=eaddr+1
-      local v=peek(a)
+      local v = @(a)
       poke(a,
-      --band(peek(bor(laddr,v)),0xf) |
-      (peek(laddr | v) & 0x0f) |
-      --band(v,0xf0)
+      (@(laddr | v) & 0x0f) |
       (v & 0xf0)
       )
      end
-    end
     end
 end
 
@@ -438,6 +418,7 @@ function fl_light(lx,ly,brightness,ln)
   -- transform coordinates
   -- into light-space
   local ox,oy,oe=x1-lx,y-ly,x2-lx
+  --printh("o "..ox.." "..oy.." "..oe, "log.txt")
   -- brightness range multiplier
   -- + per line flicker effect
   local mul=
@@ -450,7 +431,6 @@ function fl_light(lx,ly,brightness,ln)
    ysq+ox*ox,
    ysq+oe*oe
   for lv=5,0,-1 do
-   --local r=band(light_rng[lv]*mul,0xffff)
    local r = (light_rng[lv] * mul) & 0xffff
    if not slv and srng>=r then
     slv=lv+1
@@ -473,12 +453,9 @@ function fl_light(lx,ly,brightness,ln)
   -- light level within line
   --local mind=max(x1-lx,lx-x2)
   local mind = min(x1 - lx, lx - x2)
-  --printh("mind ".. mind, "log.txt")
   for lv=hlv-1,1,-1 do
-   --local brng=band(light_rng[lv]*mul,0xffff)
    local brng = (light_rng[lv] * mul) & 0xffff
-   local brp=_sqrt[brng-ysq]
-   --if brp then printh("brp ".. brp, "log.txt") end 
+   local brp=_sqrt[brng-ysq] 
    brkpts[lv]=brp
    if not brp or brp>-mind then
     llv=lv+1
@@ -495,7 +472,6 @@ function fl_light(lx,ly,brightness,ln)
   if nil ~= slv then
     for l=slv,llv+1,-1 do
     xe=ceil(lx-brkpts[l-1])
-    --printh("xe slv"..xe, "log.txt")
     fills[l](xs,xe-1,y)
     xs=xe
     end
@@ -507,7 +483,6 @@ function fl_light(lx,ly,brightness,ln)
   if nil ~= elv then 
     for l=llv,elv-1 do 
     xe=ceil(lx+brkpts[l])
-    --printh("xe elv"..xe, "log.txt")
     fills[l](xs,xe-1,y)
     xs=xe
     end
@@ -534,20 +509,6 @@ function init_palettes(n)
   end
  end
 end
-
---[[function reset_palette()
- pal()
- palt(3,true)
- palt(0,false)
-end]]--
-
---[[function set_palette(no)
- for c,nc in pairs(pals[no]) do
-  pal(c,nc)
- end
-end]]--
-
-
 
 -------------------------------
 -- light object
@@ -595,8 +556,6 @@ light_offsets={
  end
  
 
-
-
 -------------------------------
 -- initialization
 -------------------------------
@@ -624,16 +583,12 @@ function update_light()
     
  -- let all objects update
  update_entities()
- -- check for collisions
- -- collision callbacks happen
- -- here
- --do_collisions()
+
 end
 
 
 function draw_light()
  cls()
- --camera(cam_x, 0)
  palt()
  palt(0, true)
  
@@ -643,7 +598,6 @@ function draw_light()
   lgt:extents()
 
  clip(xl,yt,xr-xl+1,yb-yt+1) --clip code 
- -- printh("clip "..xl.." "..yt.." "..(xr-xl+1).." "..(yb-yt+1), "log.txt")
  -- store clipping coords
  -- globally to let us
  -- not draw certain objects
@@ -686,8 +640,6 @@ function draw_light()
  render_cursed_chests(1)
  get_cursed_chests()  
  
- 
- --camera()
  camera(cam_x - min_x, cam_y - min_y)
  render_particles()
 
