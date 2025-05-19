@@ -43,14 +43,30 @@ next_level = {}
 pre_level = {}
 hint_limit = {}
 next_level[-1] = 3 pre_level[3] = -1 hint_limit[3] = 0
-next_level[3] = 0 pre_level[0] = 3 hint_limit[0] = 0
+next_level[3] = 6 pre_level[6] = 3 hint_limit[6] = 0
+--next_level[3] = 0 pre_level[0] = 3 hint_limit[0] = 0
 next_level[0] = 2 pre_level[2] = 0 hint_limit[2] = 1
 next_level[2] = 1 pre_level[1] = 2 hint_limit[1] = 2
 next_level[1] = 5 pre_level[5] = 1
 
+
 function load_next_level()
     --current_index = -1 
     level_index = next_level[level_index]
+    if 6 == level_index then
+        x1 = 5 * 16 * 8
+        y1 = 0
+        x0 = x1 + 24
+        y0 = y1 + 8
+        gravity = 0.04
+        min_x = x1
+        min_y = y1
+        max_x = x1 + 128
+        max_y = y1 + 128
+        num_particles = 32
+        water = true
+        air = false
+    end
     if 0 == level_index then
         x1 = 128 
         y1 = 3 * 16 * 8
@@ -158,7 +174,12 @@ function load_next_level()
         player.sp = 59 
     end
 
-    if 0 == level_index then
+    if 6 == level_index then
+        bubble_time = 600
+        boost_time = 800
+        max_bubble_time = 800
+        max_bubble_per = 1
+    elseif 0 == level_index then
         if 2 == difficulty then 
             bubble_time = 200
             max_bubble_time = 250
@@ -306,9 +327,17 @@ function camera_update()
     smooth = 4
     delta_x = (flr(player.x) - 64 + player.w / 2 - cam_x + 0.5) / smooth
 
-    cam_x += delta_x
-    if cam_x < map_start then
-        cam_x = map_start
+    if 6 ~= level_index then  
+        cam_x += delta_x
+        if cam_x < map_start then
+            cam_x = map_start
+        end
+    end 
+    if 6 == level_index then
+        delta_x = (flr(player.x) - 64 + player.w / 2 - cam_x)
+        delta_y = (flr(player.y) - 64 + player.h / 2 - cam_y) 
+        cam_x += delta_x
+        cam_y += delta_y
     end
 
 end
