@@ -15,16 +15,18 @@ end
 
 
 function _update60()
-    
+
    player_update()
+   update_infinity()
    player_animate()
    menu_update()    
 
+   camera_update()
    update_light()
    update_sfx()
    update_smoke()
    update_foam()
-   camera_update()
+   
 
 end
 

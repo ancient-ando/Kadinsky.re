@@ -61,8 +61,8 @@ function load_next_level()
         gravity = 0.04
         min_x = x1
         min_y = y1
-        max_x = x1 + 128
-        max_y = y1 + 128
+        max_x = x1 + 256
+        max_y = y1 + 256
         num_particles = 32
         water = true
         air = false
@@ -324,10 +324,9 @@ function camera_update()
     --simple camera
     --cam_x = player.x - 64 + player.w / 2
     --printh("player pos x y ".. player.x.. ", ".. player.y, "log0.txt")
-    smooth = 4
-    delta_x = (flr(player.x) - 64 + player.w / 2 - cam_x + 0.5) / smooth
-
     if 6 ~= level_index then  
+        smooth = 4
+        delta_x = (flr(player.x) - 64 + player.w / 2 - cam_x + 0.5) / smooth
         cam_x += delta_x
         if cam_x < map_start then
             cam_x = map_start
