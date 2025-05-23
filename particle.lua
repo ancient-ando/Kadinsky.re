@@ -44,8 +44,12 @@ end
 function update_smoke()
     foreach(smoke, function (s)
         s.spr += 0.2
-        s.x += s.spdx
-        s.y += s.spdy
+        s.x += s.spdx 
+        s.y += s.spdy 
+
+        s.x += shift_x
+        s.y += shift_y
+
         if s.spr >= 144 then
             del(smoke, s)
         end
@@ -78,12 +82,17 @@ end
 function update_foam()
     foreach(foam, function (f)
         f.t += 1
-        if f.t >= 300 or f.y < min_y then
+        if f.t >= 10000 or f.y < min_y then
             del(foam, f)
         end
-        f.y -= f.spdy
+        f.y -= f.spdy 
         f.x += 0.25 * sin(f.off) + f.spdx
+
+        f.y += shift_y
+        f.x += shift_x 
+
         f.off += min(0.05, f.spdy / 32)
+        
     end)
 end
 function render_foam()

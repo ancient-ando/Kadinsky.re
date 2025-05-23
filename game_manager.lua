@@ -23,6 +23,8 @@ function _update60()
 
    camera_update()
    update_light()
+   shift_infinity()
+   dream_infinity()
    update_sfx()
    update_smoke()
    update_foam()

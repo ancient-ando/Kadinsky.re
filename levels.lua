@@ -53,19 +53,27 @@ next_level[1] = 5 pre_level[5] = 1
 function load_next_level()
     --current_index = -1 
     level_index = next_level[level_index]
+    tshift_x = 0
+    tshift_y = 0
     if 6 == level_index then
         x1 = 5 * 16 * 8
         y1 = 0
-        x0 = x1 + 24
-        y0 = y1 + 8
+        x0 = x1 + 128
+        y0 = y1 + 128
         gravity = 0.04
         min_x = x1
         min_y = y1
         max_x = x1 + 256
         max_y = y1 + 256
+        q3_x = (min_x + 3 * max_x) / 4
+        q1_x = (3 * min_x + max_x) / 4
+        mid_x = (min_x + max_x) / 2
+        q3_y = (min_y + 3 * max_y) / 4
+        q1_y = (3 * min_y + max_y) / 4
+        mid_y = (min_y + max_y) / 2
         num_particles = 32
-        water = true
-        air = false
+        water = false
+        air = true
     end
     if 0 == level_index then
         x1 = 128 
@@ -178,7 +186,7 @@ function load_next_level()
         bubble_time = 600
         boost_time = 800
         max_bubble_time = 800
-        max_bubble_per = 1
+        max_bubble_per = 0.75
     elseif 0 == level_index then
         if 2 == difficulty then 
             bubble_time = 200
