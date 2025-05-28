@@ -35,16 +35,16 @@ end
 --Currently called by the dream.lua's _update function so that it can print things
 function update_bubble(x, y)
 	--printh("\ndebug "..bubble_time, "log.txt")
-    if bubble_time >= 0.25 and 3 ~= level_index and not player.awaking then
+    if bubble_time >= 0.25 and 6 ~= level_index and 3 ~= level_index and not player.awaking then
        bubble_time -= 0.25
-	   radius = min_r+(range*(bubble_time/max_bubble_time))
+	   
        if bubble_time < 0.25 and 5~= level_index and not player.teleporting then
 		   --reloads
 		   reload_level()
        end
     end
-
-	radius_percent = (radius-min_r)*100/range
+	radius = min_r + range * (bubble_time / max_bubble_time)
+	radius_percent = (radius - min_r) * 100 / range
 
     --[[
     for each of the points within radius, if the sprite there has the collider flag (1), print a zero there
@@ -65,7 +65,7 @@ function update_bubble_sounds(index)
        sound_time -= 1
        if sound_time <= 0 then
            sound_time = max_sound_time
-		   if not player.awaking then
+		   if not player.awaking and 6 ~= level_index then
 			psfx(index, 2)
 		   end
        end

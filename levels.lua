@@ -24,6 +24,7 @@ function load_level(x, y, restart_music, restart_level)
     cursed_keys_current_anime = {}
     cursed_chests_current_anime = {}
     frame_timer = 0 
+    infinite_timer = 0
     ui_chest_timer = 0
     ui_key_timer = 0
 	player_init(x, y, restart_level)
@@ -31,10 +32,12 @@ function load_level(x, y, restart_music, restart_level)
     num_keys_get = 0
     num_opened_chests = 0
     if restart_music then
-        if not player.awaking then 
+        if not player.awaking and 6 ~= level_index then 
             music(level_index % 6, 300, 3)
-        else
-        music(-1)
+        elseif not player.awaking and 6 == level_index then
+            music(6, 300, 3)
+        else 
+            music(-1)
         end
     end
 end
@@ -42,20 +45,34 @@ end
 next_level = {}
 pre_level = {}
 hint_limit = {}
+pre_level[-1] = -1
 next_level[-1] = 3 pre_level[3] = -1 hint_limit[3] = 0
-next_level[3] = 6 pre_level[6] = 3 hint_limit[6] = 0
---next_level[3] = 0 pre_level[0] = 3 hint_limit[0] = 0
+
+--next_level[3] = 6 pre_level[6] = 3 hint_limit[6] = 0
+
+next_level[3] = 0 pre_level[0] = 3 hint_limit[0] = 0
+
 next_level[0] = 2 pre_level[2] = 0 hint_limit[2] = 1
 next_level[2] = 1 pre_level[1] = 2 hint_limit[1] = 2
-next_level[1] = 5 pre_level[5] = 1
+
+next_level[1] = 6 pre_level[6] = 1 hint_limit[6] = 1000
+next_level[6] = 5 pre_level[5] = 6 hint_limit[5] = 1
+
+--next_level[1] = 5 pre_level[5] = 1
 
 
 function load_next_level()
     --current_index = -1 
     level_index = next_level[level_index]
+    level = level_index
     tshift_x = 0
     tshift_y = 0
     if 6 == level_index then
+        target_x = (rnd(1) - 0.5) * 1024
+        target_y = -rnd(1) * 512
+        time_shift = 0
+        dream_shift = 0
+
         x1 = 5 * 16 * 8
         y1 = 0
         x0 = x1 + 128
@@ -71,9 +88,9 @@ function load_next_level()
         q3_y = (min_y + 3 * max_y) / 4
         q1_y = (3 * min_y + max_y) / 4
         mid_y = (min_y + max_y) / 2
-        num_particles = 32
-        water = false
-        air = true
+        num_particles = 128
+        water = true
+        air = false
     end
     if 0 == level_index then
         x1 = 128 
@@ -183,10 +200,10 @@ function load_next_level()
     end
 
     if 6 == level_index then
-        bubble_time = 600
-        boost_time = 800
-        max_bubble_time = 800
-        max_bubble_per = 0.75
+        bubble_time = 180
+        boost_time = 300
+        max_bubble_time = 300
+        max_bubble_per = 0.6
     elseif 0 == level_index then
         if 2 == difficulty then 
             bubble_time = 200
@@ -253,6 +270,19 @@ function load_next_level()
     num_keys_get = 0
     num_opened_chests = 0
     num_crystal_get = 0
+    if 6 == level_index then
+        num_cursed_keys = 4  
+        num_cursed_chests = 5 
+
+        num_boost = 3 
+        num_crystal = 2 
+
+        num_crystal_required = 2
+        num_opened_chests_required = 2
+        weirdness_key = 0.5
+        weirdness_chest = 1
+        hint = false
+    end
     if 1 == level_index then
         num_cursed_keys = 4  
         num_cursed_chests = 5 
@@ -328,7 +358,11 @@ end
 
 --called in update function
 function camera_update()
-    frame_timer += 1
+    if abs(player.last_x - player.x) > 0.01 or abs(player.last_y - player.y) > 0.01 then
+        frame_timer += 1
+        player.last_x = player.x
+        player.last_y = player.y 
+    end
     --simple camera
     --cam_x = player.x - 64 + player.w / 2
     --printh("player pos x y ".. player.x.. ", ".. player.y, "log0.txt")

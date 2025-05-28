@@ -14,6 +14,8 @@ function player_init(spawn_x, spawn_y, awaking)
             sp = 48,
             x = spawn_x,
             y = spawn_y,
+            last_x = 0,
+            last_y = 0,
             w = 8,
             h = 8,
             flip = false,
@@ -54,7 +56,11 @@ function player_update()
             return 
         elseif btn(k_left) or btn(k_right) or btn(k_up) or btn(k_down) or btnp(k_x) then
             player.awaking = false
-            music(level_index % 6, 300, 3)
+            if 6 ~= level_index then 
+                music(level_index % 6, 300, 3)
+            elseif 6 == level_index then
+                music(6, 300, 3)
+            end
         else 
             return 
         end

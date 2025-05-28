@@ -16,6 +16,7 @@ end
 
 function _update60()
 
+   
    player_update()
    update_infinity()
    player_animate()
@@ -73,6 +74,15 @@ function show_performance()
     fps ..  " fps"
     print(perf,0,122+cam_y,0)
     print(perf,0,121+cam_y,fps==60 and 7 or 8)
+
+    local cood=
+    "x:" ..target_x .. " y:" ..target_y
+    print(cood,0,100+cam_y,7)
+    local shif =
+    "dream:" ..dream_shift .. " time:"..time_shift .. " ratio: ".. (dream_shift + 1) / (dream_shift + time_shift + 2)
+    print(shif, 0,110+cam_y,7) 
+    
+
     camera()
     clip(xl,yt,xr-xl+1,yb-yt+1)
 end

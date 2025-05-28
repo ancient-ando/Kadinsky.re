@@ -72,3 +72,19 @@ function(k)
     menuitem(nil, diff_display)
     return true
 end)
+
+level = 0
+menuitem(2, "level: 3", 
+function(k)
+    if 2 == k and 5 ~= level then
+        level = next_level[level]
+    end
+    if 1 == k and 3 ~= level then 
+        level = pre_level[level]
+    end
+    level_index = level
+    reload_level()
+    level_display = "level: " .. level
+    menuitem(nil, level_display)
+    return true
+end)
