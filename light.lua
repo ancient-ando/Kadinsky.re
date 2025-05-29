@@ -66,64 +66,9 @@ function kind(kob)
  return kob 
 end
 
-dirs={
- v(-1,0),v(1,0),
- v(0,-1),v(0,1)
-}
 
--------------------------------
--- boxes
--------------------------------
 
--- a box is just a rectangle
--- with some helper methods
-box=kind()
- function box:translate(v)
-  return make_box(
-   self.xl+v.x,self.yt+v.y,
-   self.xr+v.x,self.yb+v.y
-  )
- end
- 
- function box:overlaps(b)
-  return 
-   self.xr>=b.xl and 
-   b.xr>=self.xl and
-   self.yb>=b.yt and 
-   b.yb>=self.yt
- end
- 
- function box:contains(pt)
-  return pt.x>=self.xl and
-   pt.y>=self.yt and
-   pt.x<=self.xr and
-   pt.y<=self.yb
- end
-    
- function box:sepv(b)
-  local candidates={
-   v(b.xl-self.xr-1,0),
-   v(b.xr-self.xl+1,0),
-   v(0,b.yt-self.yb-1),
-   v(0,b.yb-self.yt+1)
-  }
-  return min_of(candidates,vec.__len)   
- end
 
-function make_box(xl,yt,xr,yb)
- if (xl>xr) xl,xr=xr,xl
- if (yt>yb) yt,yb=yb,yt
- return box:new({
-  xl=xl,yt=yt,xr=xr,yb=yb
- })
-end
-
-function vec_box(v1,v2)
- return make_box(
-  v1.x,v1.y,
-  v2.x,v2.y
- )
-end
 
 ------------------------------
 -- entity system
@@ -205,24 +150,6 @@ end
 -- entity rendering
 ------------------------------
 
--- renders entities, sorted by
--- y to get proper occlusion
---[[function render_entities()
- ysorted={}
- 
- for d in all(entities_with.render) do
-  local y=d.pos and flr(d.pos.y) or 139
-  ysorted[y]=ysorted[y] or {}
-  add(ysorted[y],d)
- end
- for y=clipbox.yt,clipbox.yb do
-  for d in all(ysorted[y]) do
-   reset_palette()
-   d:render(d.t)
-  end
-  reset_palette()
- end
-end]]--
 
 
 
@@ -517,7 +444,7 @@ end
 light=kind({
  extends=entity,
  off=v(0,0),
- cbox=make_box(-1,-1,1,1)
+ --cbox=make_box(-1,-1,1,1)
 })
 light_offsets={
  v(-7,-2),v(7,-2),
@@ -601,9 +528,7 @@ function draw_light()
  -- store clipping coords
  -- globally to let us
  -- not draw certain objects
- clipbox=make_box(
-  xl-8,yt,xr+8,yb+24
- )
+ --clipbox=make_box(xl-8,yt,xr+8,yb+24)
 
 
  smooth = 4
@@ -660,13 +585,3 @@ function draw_light()
 
 end
 
-function show_performance()
- clip()
- local cpu=flr(stat(1)*100)
- local fps=-60/flr(-stat(1))
- local perf=
-  cpu .. "% cpu @ " ..
-  fps ..  " fps"
- print(perf,0,122,0)
- print(perf,0,121,fps==60 and 7 or 8)
-end

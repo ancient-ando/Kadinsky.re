@@ -75,13 +75,18 @@ function show_performance()
     print(perf,0,122+cam_y,0)
     print(perf,0,121+cam_y,fps==60 and 7 or 8)
 
-    local cood=
-    "x:" ..target_x .. " y:" ..target_y
-    print(cood,0,100+cam_y,7)
-    local shif =
-    "dream:" ..dream_shift .. " time:"..time_shift .. " ratio: ".. (dream_shift + 1) / (dream_shift + time_shift + 2)
-    print(shif, 0,110+cam_y,7) 
-    
+    if target_x and target_y then
+        local cood=
+        "x:" ..target_x .. " y:" ..target_y
+        print(cood,0,100+cam_y,7)
+        local shif =
+        "dream:" ..dream_shift .. " time:"..time_shift .. " ratio: ".. (dream_shift + 1) / (dream_shift + time_shift + 2)
+        print(shif, 0,110+cam_y,7) 
+    end
+    if tshift_x and tshift_y then
+        local tshif = "x:" .. tshift_x .. " y:" .. tshift_y 
+        print(tshif, 0, 0 + cam_y, 7)
+    end
 
     camera()
     clip(xl,yt,xr-xl+1,yb-yt+1)

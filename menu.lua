@@ -74,7 +74,7 @@ function(k)
 end)
 
 level = 0
-menuitem(2, "level: 3", 
+menuitem(2, "level: ?", 
 function(k)
     if 2 == k and 5 ~= level then
         level = next_level[level]

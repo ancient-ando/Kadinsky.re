@@ -56,10 +56,10 @@ function player_update()
             return 
         elseif btn(k_left) or btn(k_right) or btn(k_up) or btn(k_down) or btnp(k_x) then
             player.awaking = false
-            if 6 ~= level_index then 
+            if 6 > level_index then 
                 music(level_index % 6, 300, 3)
-            elseif 6 == level_index then
-                music(6, 300, 3)
+            elseif 6 <= level_index then
+                music(6 + level_index % 6, 300, 3)
             end
         else 
             return 

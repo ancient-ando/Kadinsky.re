@@ -1,23 +1,31 @@
-
+particles = {}
 function init_particles(num)
-    particles = {}
-    for i=0, num do
+    --
+    for i = 0, num - count(particles), 1 do
         add(particles, {
-            x = rnd(max_x - min_x),
-            y = rnd(max_y - min_y),
+            x = rnd(max_x - min_x + tshift_x),
+            y = rnd(max_y - min_y + tshift_y),
             s = 0 + flr(rnd(5)/4),
             spd = 0.25 + rnd(0.25),
             off = rnd(0.25),
-            c = 6 + flr(0.5 + rnd(1))
+            c = 6 + flr(0.5 + rnd(1)),
+            t = 0
         })
     end
+    
 end
 
 function render_particles()
     -- particles
     foreach(particles, function(p)
+        p.t += 1
+        if p.t >= 1200 or p.x < min_x or p.x > max_x or p.y < min_y or p.y > max_y then
+            del(foam, p)
+        end
         p.y -= p.spd
         p.x += 0.25 * sin(p.off)
+        p.y += shift_y
+        p.x += shift_x 
         p.off += min(0.05, p.spd / 32)
         rectfill(p.x, p.y, p.x + p.s, p.y + p.s, p.c)
         if p.y < -4 then 
@@ -43,7 +51,11 @@ function init_smoke(obj)
 end
 function update_smoke()
     foreach(smoke, function (s)
-        s.spr += 0.2
+        if 7 == level_index then 
+            s.spr += 0.02
+        else
+            s.spr += 0.2
+        end
         s.x += s.spdx 
         s.y += s.spdy 
 
@@ -82,7 +94,7 @@ end
 function update_foam()
     foreach(foam, function (f)
         f.t += 1
-        if f.t >= 10000 or f.y < min_y then
+        if f.t >= 300 or f.y < min_y then
             del(foam, f)
         end
         f.y -= f.spdy 
