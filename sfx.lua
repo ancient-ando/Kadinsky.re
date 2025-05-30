@@ -10,3 +10,9 @@ function update_sfx()
         sfx_timer -= 1
     end
 end
+
+
+-- Dangerous functions follow 
+function set_speed(sfx, speed)
+  poke(0x3200 + 68*sfx + 65, speed)
+end

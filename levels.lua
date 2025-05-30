@@ -70,14 +70,30 @@ function load_next_level()
     level = level_index
     tshift_x = 0
     tshift_y = 0
+    shift_x = 0
+    shift_y = 0
+
+    set_speed(36, 28)
+    set_speed(30, 28)
+    set_speed(40, 28)
+    set_speed(44, 28)
+    set_speed(50, 28)
+    set_speed(52, 28)
+
     if 7 == level_index then
+        set_speed(36, 56)
+        set_speed(30, 56)
+        set_speed(40, 56)
+        set_speed(44, 56)
+        set_speed(50, 56)
+        set_speed(52, 56)
         time_shift = 0 
         dream_shift = 0
         x1 = 5 * 16 * 8
         y1 = 0
         x0 = x1 + 128
         y0 = y1 + 128
-        gravity = 0.04
+        gravity = 0.02
         min_x = x1
         min_y = y1
         max_x = x1 + 256
@@ -88,7 +104,7 @@ function load_next_level()
         q3_y = (min_y + 3 * max_y) / 4
         q1_y = (3 * min_y + max_y) / 4
         mid_y = (min_y + max_y) / 2
-        num_particles = 64
+        num_particles = 128
         water = true
         air = true
     end
@@ -147,6 +163,7 @@ function load_next_level()
         air = false
     end
     if 2 == level_index then
+
         x1 = 256
         y1 = 3 * 16 * 8
         x0 = x1 + 8
@@ -315,7 +332,11 @@ function load_next_level()
         hint = false
     end
     if 6 == level_index then
-        num_cursed_keys = 4  
+        if hint then 
+            num_cursed_keys = 5
+        else
+            num_cursed_keys = 4  
+        end
         num_cursed_chests = 5 
 
         num_boost = 3 
@@ -328,7 +349,11 @@ function load_next_level()
         hint = false
     end
     if 1 == level_index then
-        num_cursed_keys = 4  
+        if hint then 
+            num_cursed_keys = 5
+        else
+            num_cursed_keys = 4  
+        end  
         num_cursed_chests = 5 
 
         num_boost = 3 
@@ -390,6 +415,9 @@ function reload_level()
     awake_timer = 100
     fail = fail_in_a_row
     h = hint
+    if fail_in_a_row >= hint_limit[level_index] then 
+        hint = true
+    end
     load_next_level()
     fail_in_a_row = fail + 1
     

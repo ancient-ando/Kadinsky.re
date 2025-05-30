@@ -1,37 +1,89 @@
 particles = {}
+
+function bool2num(b)
+    if (b) then return 1
+    else return 0 end
+end
 function init_particles(num)
     --
-    for i = 0, num - count(particles), 1 do
-        add(particles, {
-            x = rnd(max_x - min_x + tshift_x),
-            y = rnd(max_y - min_y + tshift_y),
-            s = 0 + flr(rnd(5)/4),
-            spd = 0.25 + rnd(0.25),
-            off = rnd(0.25),
-            c = 6 + flr(0.5 + rnd(1)),
-            t = 0
-        })
-    end
-    
+    if count(particles) >= num then return end
+    if 0 ~= shift_x or 0 ~= shift_y then 
+        for i = 0, num - count(particles), 1 do
+            a_y = abs(shift_y)
+            a_x = abs(shift_x)
+            area_y = a_y * (max_x - min_x)
+            area_x = a_x * (max_y - min_y - a_y)
+            if rnd(1) < area_y / (area_y + area_x) then
+                add(particles, {
+                x = rnd(max_x - min_x),
+                --y = rnd(max_y - min_y),
+                y = rnd(a_y) + (max_y - min_y - a_y) * bool2num(shift_y < 0),
+                s = 0 + flr(rnd(5)/4),
+                spd = 0.25 + rnd(0.25),
+                off = rnd(0.25),
+                c = 6 + flr(0.5 + rnd(1)),
+                t = 0
+                })
+            else
+                add(particles, {
+                x = rnd(a_x) + (max_x - min_x - a_x) * bool2num(shift_x < 0), 
+                y = a_y * bool2num(shift_y > 0) + rnd(max_y - min_y - a_y),
+                s = 0 + flr(rnd(5)/4),
+                spd = 0.25 + rnd(0.25),
+                off = rnd(0.25),
+                c = 6 + flr(0.5 + rnd(1)),
+                t = 0
+                })
+            end
+            
+        end
+    else
+        for i = 0, num - count(particles), 1 do
+            add(particles, {
+                x = rnd(max_x - min_x),
+                y = rnd(max_y - min_y),
+                s = 0 + flr(rnd(5)/4),
+                spd = 0.25 + rnd(0.25),
+                off = rnd(0.25),
+                c = 6 + flr(0.5 + rnd(1)),
+                t = 0
+            })
+        end
+    end 
+end
+
+
+function update_particles()
+    foreach(particles, function(p)
+        p.t += 1
+
+        if level_index < 6 then 
+            p.y -= p.spd
+            p.x += 0.25 * sin(p.off)
+            p.y += shift_y
+            p.x += shift_x 
+            p.off += min(0.05, p.spd / 32)
+        else
+            p.y -= p.spd / 3
+            p.x += 0.08 * sin(p.off)
+            p.y += shift_y
+            p.x += shift_x 
+            p.off += min(0.05, p.spd / 32)
+        end
+        if p.y < -4 then 
+            p.y = max_y - min_y
+            p.x = rnd(max_x - min_x)
+        end
+        if p.t >= 1200 or p.x < 0 or p.x > max_x - min_x or p.y < 0 or p.y > max_y - min_y then
+            del(particles, p)
+        end
+    end)
 end
 
 function render_particles()
     -- particles
     foreach(particles, function(p)
-        p.t += 1
-        if p.t >= 1200 or p.x < min_x or p.x > max_x or p.y < min_y or p.y > max_y then
-            del(foam, p)
-        end
-        p.y -= p.spd
-        p.x += 0.25 * sin(p.off)
-        p.y += shift_y
-        p.x += shift_x 
-        p.off += min(0.05, p.spd / 32)
         rectfill(p.x, p.y, p.x + p.s, p.y + p.s, p.c)
-        if p.y < -4 then 
-            p.y = max_y - min_y
-            p.x = rnd(max_x - min_x)
-        end
     end)
 end
 
@@ -94,11 +146,17 @@ end
 function update_foam()
     foreach(foam, function (f)
         f.t += 1
-        if f.t >= 300 or f.y < min_y then
+        if f.t >= 1200 or f.y < min_y then
             del(foam, f)
         end
-        f.y -= f.spdy 
-        f.x += 0.25 * sin(f.off) + f.spdx
+        if 7 == level_index then 
+            f.y -= f.spdy / 3
+            f.x += 0.08 * sin(f.off) + f.spdx
+        else
+            f.y -= f.spdy 
+            f.x += 0.25 * sin(f.off) + f.spdx
+        end
+        
 
         f.y += shift_y
         f.x += shift_x 

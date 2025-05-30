@@ -29,7 +29,8 @@ function _update60()
    update_sfx()
    update_smoke()
    update_foam()
-   
+   update_particles()
+   init_particles(num_particles)
 
 end
 

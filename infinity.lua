@@ -24,7 +24,6 @@ function update_infinity()
     cshift_y = 0
     shift_x = 0
     shift_y = 0
-    init_particles(num_particles)
     if 6 <= level_index then
         if 0 == infinite_timer or frame_timer - infinite_timer > 300 or player.x < q1_x or player.x > q3_x or player.y < q1_y or player.y > q3_y then
             if player.x < q1_x or player.x > q3_x or player.y < q1_y or player.y > q3_y then
@@ -45,6 +44,8 @@ function update_infinity()
             player.y += shift_y
             tshift_x += shift_x
             tshift_y += shift_y
+
+
         end
     end
 end
