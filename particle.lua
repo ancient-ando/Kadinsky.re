@@ -13,7 +13,23 @@ function init_particles(num)
             a_x = abs(shift_x)
             area_y = a_y * (max_x - min_x)
             area_x = a_x * (max_y - min_y - a_y)
-            if rnd(1) < area_y / (area_y + area_x) then
+
+            local r = rnd(1)
+            local e = 0.001
+            local p_x = r < area_y / (area_y + area_x) and rnd(max_x - min_x) + e or rnd(a_x) + (max_x - min_x - a_x) * bool2num(shift_x < 0)
+            local p_y = r < area_y / (area_y + area_x) and rnd(a_y) + (max_y - min_y - a_y) * bool2num(shift_y < 0) or a_y * bool2num(shift_y > 0) + rnd(max_y - min_y - a_y) + e
+            
+            add(particles, {
+                x = p_x,
+                y = p_y,
+                s = 0 + flr(rnd(5)/4),
+                spd = 0.25 + rnd(0.25),
+                off = rnd(0.25),
+                c = 6 + flr(0.5 + rnd(1)),
+                t = 0
+                })
+            
+            --[[if rnd(1) < area_y / (area_y + area_x) then
                 add(particles, {
                 x = rnd(max_x - min_x),
                 --y = rnd(max_y - min_y),
@@ -34,7 +50,7 @@ function init_particles(num)
                 c = 6 + flr(0.5 + rnd(1)),
                 t = 0
                 })
-            end
+            end]]--
             
         end
     else
@@ -56,20 +72,14 @@ end
 function update_particles()
     foreach(particles, function(p)
         p.t += 1
+        local mul = level_index < 6 and 1 or 3 
 
-        if level_index < 6 then 
-            p.y -= p.spd
-            p.x += 0.25 * sin(p.off)
-            p.y += shift_y
-            p.x += shift_x 
-            p.off += min(0.05, p.spd / 32)
-        else
-            p.y -= p.spd / 3
-            p.x += 0.08 * sin(p.off)
-            p.y += shift_y
-            p.x += shift_x 
-            p.off += min(0.05, p.spd / 32)
-        end
+        p.y -= p.spd / mul
+        p.x += 0.25 * sin(p.off) / mul
+        p.y += shift_y
+        p.x += shift_x 
+        p.off += min(0.05, p.spd / 32)
+
         if p.y < -4 then 
             p.y = max_y - min_y
             p.x = rnd(max_x - min_x)
@@ -149,15 +159,11 @@ function update_foam()
         if f.t >= 1200 or f.y < min_y then
             del(foam, f)
         end
-        if 7 == level_index then 
-            f.y -= f.spdy / 3
-            f.x += 0.08 * sin(f.off) + f.spdx
-        else
-            f.y -= f.spdy 
-            f.x += 0.25 * sin(f.off) + f.spdx
-        end
-        
 
+        local mul = 7 == level_index and 3 or 1
+        f.y -= f.spdy / mul
+        f.x += 0.25 * sin(f.off) / mul + f.spdx
+        
         f.y += shift_y
         f.x += shift_x 
 

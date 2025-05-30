@@ -7,11 +7,6 @@ function round(x)
  return flr(x+0.5)
 end
 
--- copies props to obj
--- if obj is nil, a new
--- object will be created,
--- so set(nil,{...}) copies
--- the object
 function set(obj,props)
  obj=obj or {}
  for k,v in pairs(props) do
@@ -24,26 +19,13 @@ end
 -- entities that might or
 -- might not have a method
 -- to handle an event
-function event(ob,name,...)
+--[[function event(ob,name,...)
  local cb=ob[name]
  return type(cb)=="function"
   and cb(ob,...)
   or cb
-end
+end]]--
 
--- returns smallest element
--- of seq, according to key
--- function 
-function min_of(seq,key)
- local me,mk=nil,32767
- for e in all(seq) do
-  local k=key(e)
-  if k<mk then
-   me,mk=e,k
-  end
- end
- return me
-end
 
 ------------------------------
 -- class system
@@ -67,91 +49,9 @@ function kind(kob)
 end
 
 
-
-
-
-------------------------------
--- entity system
-------------------------------
-
--- entity root type
-entity=kind({
- t=0,state="s_default"
-})
-
--- a big bag of all entities
-entities={}
-
--- entities with some special
--- props are tracked separately
-entities_with={}
-tracked_props={
- "render","cbox",
- "walls","shadow"
-}
-
--- used to add/remove objects
--- in the entities_with list
-function update_with_table(e,fn)
- for prop in all(tracked_props) do
-  if e[prop] then
-   local lst=
-    entities_with[prop] or {}
-   fn(lst,e)
-   entities_with[prop]=lst
-  end
- end
-end
-
--- all entities do common
--- stuff when created -
--- mostly register in lists
-e_id=1
-function entity:create()
- if not self.name then
-  self.name=e_id..""
-  e_id+=1
- end
- local name=self.name
- entities[name]=self
- 
- update_with_table(self,add) 
-end
-
--- this is the core of our
--- _update() method - update
--- each entity in turn
-function update_entities()
- for n,e in pairs(entities) do
-  local update_fn=e[e.state]  
-  local result = update_fn
-   and update_fn(e,e.t)
-   or nil
-  
-  if result then
-   if result==true then
-    -- remove entity
-    entities[n]=nil
-    update_with_table(e,del)
-   else
-    -- set state
-    set(e,{
-     state=result,t=0
-    })    
-   end
-  else
-   -- bump timer in this state
-   e.t+=1
-  end
- end
-end
-
 ------------------------------
 -- entity rendering
 ------------------------------
-
-
-
 
 -- draws a filled rectangle
 -- with a custom fill fn
@@ -166,7 +66,7 @@ end
 
 -- draws a filled ellipse
 -- with a custom fill fn
-function cellipse(cx,cy,rx,ry,ln)
+--[[function cellipse(cx,cy,rx,ry,ln)
  cy,ry=round(cy),round(ry)
  local w=0
  local ryx,rxy=ry/rx,rx/ry
@@ -202,7 +102,7 @@ function cellipse(cx,cy,rx,ry,ln)
   my-=1
  end
 end
-
+]]--
 -------------------------------
 -- basic fills
 -------------------------------
@@ -243,11 +143,11 @@ function init_blending(nlevels)
   local addr = 0x4300 + lv * 0x100
   local sx=lv-1
   for c1=0,15 do
-   local nc=sget(sx + 16 * (level_index % 6),c1)
+   local nc=sget(sx + 8 * (level_index % 6),c1)
    local topl=shl(nc,4)
    for c2=0,15 do
     poke(addr,
-     topl+sget(sx+ 16 * (level_index % 6),c2))
+     topl+sget(sx+ 8 * (level_index % 6),c2))
     addr+=1
    end
   end
@@ -442,20 +342,11 @@ end
 -------------------------------
 
 light=kind({
- extends=entity,
- off=v(0,0),
- --cbox=make_box(-1,-1,1,1)
 })
-light_offsets={
- v(-7,-2),v(7,-2),
- v(0,-9),v(0,6)
-}
 
  function light:s_default()
   --anchor to avatar
-  --self.pos=ply.pos
   self.pos = v(ceil(player.x - cam_x) + player.w / 2, flr(player.y) - ceil(cam_y) + player.h / 2)
-  
  end
  
  function light:range()
@@ -490,13 +381,9 @@ light_offsets={
 function init_light()
  init_blending(6)
  init_palettes(16)
-  
-
  lgt=light:new({
- -- pos=v(64,120),bri=1
     pos=v(59, 59), bri = 1
  }) 
-
 end
 
 
@@ -507,10 +394,7 @@ end
 -------------------------------
 
 function update_light()
-    
- -- let all objects update
- update_entities()
-
+  lgt:s_default()
 end
 
 
@@ -518,8 +402,6 @@ function draw_light()
  cls()
  palt()
  palt(0, true)
- 
- 
  -- clip to lit rectangle
  xl,yt,xr,yb=
   lgt:extents()
@@ -529,8 +411,6 @@ function draw_light()
  -- globally to let us
  -- not draw certain objects
  --clipbox=make_box(xl-8,yt,xr+8,yb+24)
-
-
  smooth = 4
  step = 4
  offset_x += (flr(player.x) - last_x) / step / smooth

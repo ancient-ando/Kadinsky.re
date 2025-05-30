@@ -16,3 +16,9 @@ end
 function set_sfx_speed(sfx, speed)
   poke(0x3200 + 68*sfx + 65, speed)
 end
+
+function set_sfx_speeds(sfx, speed)
+    foreach (sfx, function(s)
+        poke(0x3200 + 68*s + 65, speed)
+    end)
+end

@@ -1,7 +1,5 @@
 
-radius = 6
-max_r = 6
-min_r = 2
+radius, max_r, min_r = 6, 6, 2
 range = max_r-min_r
 radius_percent = (radius-min_r)*100/range
 
@@ -21,8 +19,7 @@ function update_bubble(x, y)
 
 end
 
-sound_time = 80
-max_sound_time = 80
+sound_time, max_sound_time = 80, 80
 
 function update_bubble_sounds(index)
 	 if sound_time > 0 then

@@ -85,7 +85,7 @@ function show_performance()
         print(shif, 0,110+cam_y,7) 
     end
     if tshift_x and tshift_y then
-        local tshif = "x:" .. tshift_x .. " y:" .. tshift_y 
+        local tshif = "x:" .. tshift_x .. " y:" .. tshift_y .. " seed:" .. seed
         print(tshif, 0, 0 + cam_y, 7)
     end
 

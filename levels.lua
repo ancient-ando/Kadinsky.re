@@ -10,12 +10,12 @@ Loading entails moving the player and changing the bounds of the camera
 ]]--
 
 --simple camera
-cam_x = 0
-cam_y = 0
+cam_x, cam_y = 0, 0
+
 
 --map limits 
-map_start = 0
-map_end = 640
+map_start, map_end = 0, 640
+
 level_index = -1
 awake_timer = 0
 
@@ -23,190 +23,95 @@ function load_level(x, y, restart_music, restart_level)
     fail_in_a_row = 0
     cursed_keys_current_anime = {}
     cursed_chests_current_anime = {}
-    frame_timer = 0 
-    infinite_timer = 0
-    ui_chest_timer = 0
-    ui_key_timer = 0
+    frame_timer, infinite_timer, ui_chest_timer, ui_key_timer = 0, 0, 0, 0
 	player_init(x, y, restart_level)
 	bubble_time = max_bubble_time
-    num_keys_get = 0
-    num_opened_chests = 0
+    num_keys_get, num_opened_chest = 0, 0
     if restart_music then
-        if not player.awaking and 6 > level_index then 
-            music(level_index % 6, 300, 3)
-        elseif not player.awaking and 6 <= level_index then
-            music(6 + level_index % 6, 300, 3)
-        else 
+        if player.awaking then 
             music(-1)
+        else
+            if level_index < 6 then 
+                music(level_index % 6, 300, 3)
+            else
+                music(6 + level_index % 6, 300, 3)
+            end
         end
+
     end
 end
 
-next_level = {}
-pre_level = {}
-hint_limit = {}
+next_level, pre_level, hint_limit = {}, {}, {}
+
 pre_level[-1] = -1
 next_level[-1] = 3 pre_level[3] = -1 hint_limit[3] = 0
-
---next_level[3] = 6 pre_level[6] = 3 hint_limit[6] = 0
-
 next_level[3] = 0 pre_level[0] = 3 hint_limit[0] = 0
-
 next_level[0] = 2 pre_level[2] = 0 hint_limit[2] = 1
 next_level[2] = 1 pre_level[1] = 2 hint_limit[1] = 2
-
---next_level[1] = 6 pre_level[6] = 1 hint_limit[6] = 1000
---next_level[6] = 5 pre_level[5] = 6 hint_limit[5] = 1
-
 next_level[1] = 7 pre_level[7] = 1 hint_limit[7] = 3
 next_level[7] = 5 pre_level[5] = 7 hint_limit[5] = 1
 
---next_level[1] = 5 pre_level[5] = 1
 
 
 function load_next_level()
     --current_index = -1 
     level_index = next_level[level_index]
     level = level_index
-    tshift_x = 0
-    tshift_y = 0
-    shift_x = 0
-    shift_y = 0
+    tshift_x, tshift_y, shift_x, shift_y = 0, 0, 0, 0
 
-    set_sfx_speed(36, 28)
-    set_sfx_speed(30, 28)
-    set_sfx_speed(40, 28)
-    set_sfx_speed(44, 28)
-    set_sfx_speed(50, 28)
-    set_sfx_speed(52, 28)
+    set_sfx_speeds({36, 30, 40, 44, 50, 52}, 28)
 
     if 7 == level_index then
-        set_sfx_speed(36, 56)
-        set_sfx_speed(30, 56)
-        set_sfx_speed(40, 56)
-        set_sfx_speed(44, 56)
-        set_sfx_speed(50, 56)
-        set_sfx_speed(52, 56)
-        time_shift = 0 
-        dream_shift = 0
-        x1 = 5 * 16 * 8
-        y1 = 0
-        x0 = x1 + 128
-        y0 = y1 + 128
+        set_sfx_speeds({36, 30, 40, 44, 50, 52}, 56)
+        time_shift, dream_shift = 0, 0
+        x1, y1, x0, y0 = 640, 0, 768, 128
         gravity = 0.02
-        min_x = x1
-        min_y = y1
-        max_x = x1 + 256
-        max_y = y1 + 256
-        q3_x = (min_x + 3 * max_x) / 4
-        q1_x = (3 * min_x + max_x) / 4
-        mid_x = (min_x + max_x) / 2
-        q3_y = (min_y + 3 * max_y) / 4
-        q1_y = (3 * min_y + max_y) / 4
-        mid_y = (min_y + max_y) / 2
+        min_x, min_y, max_x, max_y = x1, y1, x1 + 256, y1 + 256
+        mid_x, mid_y = (min_x + max_x) / 2, (min_y + max_y) / 2
+        q1_x, q1_y = (min_x + mid_x) / 2, (min_y + mid_y) / 2
+        q3_x, q3_y = (mid_x + max_x) / 2, (mid_y + max_y) / 2
         num_particles = 128
-        water = true
-        air = true
+        water, air = true, true
     end
-    if 6 == level_index then
-        target_x = (rnd(1) - 0.5) * 1024
-        target_y = -rnd(1) * 512
-        time_shift = 0
-        dream_shift = 0
-
-        x1 = 5 * 16 * 8
-        y1 = 0
-        x0 = x1 + 128
-        y0 = y1 + 128
-        gravity = 0.04
-        min_x = x1
-        min_y = y1
-        max_x = x1 + 256
-        max_y = y1 + 256
-        q3_x = (min_x + 3 * max_x) / 4
-        q1_x = (3 * min_x + max_x) / 4
-        mid_x = (min_x + max_x) / 2
-        q3_y = (min_y + 3 * max_y) / 4
-        q1_y = (3 * min_y + max_y) / 4
-        mid_y = (min_y + max_y) / 2
-        num_particles = 128
-        water = true
-        air = false
-    end
+    
     if 0 == level_index then
-        x1 = 128 
-        y1 = 3 * 16 * 8
-        x0 = x1 + 24
-        y0 = y1 + 8
+        x1, y1, x0, y0 = 128, 384, 128 + 24, 384 + 8 
         gravity = 0.04
-        min_x = x1
-        min_y = y1
-        max_x = x1 + 128
-        max_y = y1 + 128
+        min_x, min_y, max_x, max_y = x1, y1, x1 + 128, y1 + 128
         num_particles = 32
-        water = true
-        air = false
+        water, air = true, false
     end
     if 1 == level_index then
-        x1 = 0 
-        y1 = 0
-        x0 = x1 + 59
-        y0 = y1 + 59
+        x1, y1, x0, y0 = 0, 0, 59, 59
         gravity = 0.04
         friction = 0.85
-        min_x = x1
-        min_y = y1
-        max_x = x1 + 640
-        max_y = y1 + 128 
+        min_x, min_y, max_x, max_y = x1, y1, x1 + 640, y1 + 128
         num_particles = 160
-        water = true
-        air = false
+        water, air = true, false
     end
     if 2 == level_index then
-
-        x1 = 256
-        y1 = 3 * 16 * 8
-        x0 = x1 + 8
-        y0 = y1 + 112
+        x1, y1, x0, y0 = 256, 384, 256 + 8, 384 + 112
         gravity = 0.08
         friction = 0.5
-        min_x = x1
-        min_y = y1
-        max_x = x1 + 256
-        max_y = y1 + 128
+        min_x, min_y, max_x, max_y = x1, y1, x1 + 256, y1 + 128
         num_particles = 0
-        water = false
-        air = true
+        water, air = false, true
     end
     if 3 == level_index then
-        x1 = 0 
-        y1 = 3 * 16 * 8
-        x0 = x1 + 59
-        y0 = y1 + 59
+        x1, y1, x0, y0 = 0, 384, 59, 384 + 59
         gravity = 0.04
         friction = 0.85
-        min_x = x1
-        min_y = y1
-        max_x = x1 + 128 
-        max_y = y1 + 128
+        min_x, min_y, max_x, max_y = x1, y1, x1 + 128, y1 + 128
         num_particles = 32
-        water = true
-        air = false
+        water, air = true, false
     end
     if 5 == level_index then
-        x1 = 0 
-        y1 = 1 * 16 * 8
-        x0 = x1 + 59
-        y0 = y1 + 59
+        x1, y1, x0, y0 = 0, 128, 59, 128 + 59
         gravity = 0.04
         friction = 0.85
-        min_x = x1
-        min_y = y1
-        max_x = x1 + 640
-        max_y = y1 + 128
+        min_x, min_y, max_x, max_y = x1, y1, x1 + 640, y1 + 128
         num_particles = 160
-        water = true
-        air = false
+        water, air = true, false
     end
     particles = {}
     init_particles(num_particles)
@@ -244,74 +149,38 @@ function load_next_level()
     end
 
     if 7 == level_index then
-        bubble_time = 180
-        boost_time = 300
-        max_bubble_time = 300
-        max_bubble_per = 0.6
+        bubble_time, boost_time, max_bubble_time, max_bubble_per = 180, 300, 300, 0.6
     elseif 6 == level_index then
-        bubble_time = 180
-        boost_time = 300
-        max_bubble_time = 300
-        max_bubble_per = 0.6
+        bubble_time, boost_time, max_bubble_time, max_bubble_per = 180, 300, 300, 0.6
     elseif 0 == level_index then
         if 2 == difficulty then 
-            bubble_time = 200
-            max_bubble_time = 250
-            max_bubble_per = 0.8
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 200, 0, 250, 0.8
         elseif 1 == difficulty then 
-            bubble_time = 240
-            max_bubble_time = 300
-            max_bubble_per = 0.8
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 240, 0, 300, 0.8
         elseif 0 == difficulty then
-            bubble_time = 320
-            max_bubble_time = 400
-            max_bubble_per = 0.8
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 320, 0, 400, 0.8
         end
 
     elseif 1 == level_index then
         if 2 == difficulty then 
-            bubble_time = 180
-            max_bubble_time = 300
-            boost_time = 300
-            max_bubble_per = 0.6
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 180, 300, 300, 0.6
         elseif 1 == difficulty then
-            bubble_time = 300
-            max_bubble_time = 400
-            boost_time = 300
-            max_bubble_per = 0.75
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 300, 300, 400, 0.75
         elseif 0 == difficulty then
-            bubble_time = 400
-            max_bubble_time = 500
-            boost_time = 400
-            max_bubble_per = 0.8
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 400, 500, 0.8
         end
     elseif 2 == level_index then
         if 2 == difficulty then 
-            bubble_time = 160
-            boost_time = 200
-            max_bubble_time = 200
-            max_bubble_per = 0.8
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 160, 200, 200, 0.8
         elseif 1 == difficulty then 
-            bubble_time = 360
-            boost_time = 400
-            max_bubble_time = 400
-            max_bubble_per = 0.9
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 360, 400, 400, 0.9
         elseif 0 == difficulty then
-            bubble_time = 500
-            boost_time = 500
-            max_bubble_time = 500
-            max_bubble_per = 1
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 500, 500, 500, 1
         end
     elseif 3 == level_index then
-        bubble_time = 400
-        boost_time = 400
-        max_bubble_time = 400
-        max_bubble_per = 1
+        bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 400, 400, 1
     elseif 5 == level_index then
-        bubble_time = 400
-        boost_time = 400
-        max_bubble_time = 400
-        max_bubble_per = 1
+        bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 400, 400, 1
     end
     
     
