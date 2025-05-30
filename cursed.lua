@@ -19,7 +19,8 @@ critical_distance = 15
 function get_cursed_keys()
     local celx = flr((player.x + player.w / 2) / 8)
     local cely = flr((flr(player.y) + player.h / 2) / 8)
-    if fget(mget(celx, cely), 7) then 
+    --if fget(mget(celx, cely), 7) then 
+    if 133 == mget(celx, cely) then 
         --rect(celx * 8 - 2, cely * 8 - 2, celx * 8 + 2, cely * 8 + 2)
         --rect(player.x - 3, player.y - 3, player.x + 3, player.y + 3)
     if #(v(celx * 8, cely * 8)-v(flr(player.x), flr(player.y))) < critical_distance then
@@ -62,7 +63,8 @@ end
 function get_cursed_chests()
     local celx = flr((flr(player.x) + player.w / 2) / 8)
     local cely = flr((flr(player.y) + player.h / 2) / 8)
-    if fget(mget(celx, cely), 6) then 
+    --if fget(mget(celx, cely), 6) then 
+    if 134 == mget(celx, cely) then 
     if #(v(celx * 8, cely * 8)-v(flr(player.x), flr(player.y))) < critical_distance then
         --printh('\n new chest found', 'log.txt')
         
@@ -124,7 +126,8 @@ function render_cursed_keys(pass)
         for j = y1, y2 - 1, 8 do
             local celx = flr((i ) / 8)
             local cely = flr((j ) / 8) 
-            if fget(mget(celx, cely), 7) then 
+            --if fget(mget(celx, cely), 7) then 
+            if 133 == mget(celx, cely) then 
                 local r = sqrt(player.bubble_size) + bubble_delta 
                 if #(v(celx * 8, cely * 8)-v(flr(player.x), flr(player.y))) < r * r then
                 cursed_keys_current_frame[get_hash(celx, cely)] = "inside"
@@ -210,7 +213,8 @@ function render_cursed_chests(pass)
         for j = y1, y2 - 1, 8 do
             local celx = flr((i ) / 8)
             local cely = flr((j ) / 8)
-            if fget(mget(celx, cely), 6) then 
+            --if fget(mget(celx, cely), 6) then 
+            if 134 == mget(celx, cely) then 
                 local r = sqrt(player.bubble_size) + bubble_delta 
                 if #(v(celx * 8, cely * 8)-v(flr(player.x), flr(player.y))) < r * r then
                 cursed_chests_current_frame[get_hash(celx, cely)] = "inside"

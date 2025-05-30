@@ -73,20 +73,20 @@ function load_next_level()
     shift_x = 0
     shift_y = 0
 
-    set_speed(36, 28)
-    set_speed(30, 28)
-    set_speed(40, 28)
-    set_speed(44, 28)
-    set_speed(50, 28)
-    set_speed(52, 28)
+    set_sfx_speed(36, 28)
+    set_sfx_speed(30, 28)
+    set_sfx_speed(40, 28)
+    set_sfx_speed(44, 28)
+    set_sfx_speed(50, 28)
+    set_sfx_speed(52, 28)
 
     if 7 == level_index then
-        set_speed(36, 56)
-        set_speed(30, 56)
-        set_speed(40, 56)
-        set_speed(44, 56)
-        set_speed(50, 56)
-        set_speed(52, 56)
+        set_sfx_speed(36, 56)
+        set_sfx_speed(30, 56)
+        set_sfx_speed(40, 56)
+        set_sfx_speed(44, 56)
+        set_sfx_speed(50, 56)
+        set_sfx_speed(52, 56)
         time_shift = 0 
         dream_shift = 0
         x1 = 5 * 16 * 8
@@ -225,7 +225,8 @@ function load_next_level()
             for j = y1, y2 - 1, 8 do
                 celx = flr(i / 8)
                 cely = flr(j / 8)
-                if fget(mget(celx, cely), 5) then 
+                --if fget(mget(celx, cely), 5) then 
+                if 59 == mget(celx, cely) then 
                     x0 = celx * 8
                     y0 = cely * 8 
                 end
@@ -415,7 +416,7 @@ function reload_level()
     awake_timer = 100
     fail = fail_in_a_row
     h = hint
-    if fail_in_a_row >= hint_limit[level_index] then 
+    if fail_in_a_row >= hint_limit[next_level[level_index]] then 
         hint = true
     end
     load_next_level()

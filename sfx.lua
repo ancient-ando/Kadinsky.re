@@ -13,6 +13,6 @@ end
 
 
 -- Dangerous functions follow 
-function set_speed(sfx, speed)
+function set_sfx_speed(sfx, speed)
   poke(0x3200 + 68*sfx + 65, speed)
 end
