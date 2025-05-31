@@ -451,7 +451,7 @@ function draw_light()
  render_particles()
 
  camera()
- lgt:apply() 
+ --lgt:apply() 
  
  camera(cam_x, cam_y)
  render_cursed_keys(2)

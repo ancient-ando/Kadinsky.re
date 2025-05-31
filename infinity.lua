@@ -7,13 +7,14 @@ function shift_infinity()
     local c_x, c_y = mid_x / 8, mid_y / 8
     local cmin_x, cmax_x = min_x / 8, max_x / 8
     local cmin_y, cmax_y = min_y / 8, max_y / 8
-    --for i = c_x + s_x * c_r, c_x - s_x * c_r, -s_x do 
-        --for j = c_y + s_y * c_r, c_y - s_y * c_r, -s_y do
-    for i = cmin_x + 1, cmax_x do 
-        for j = cmin_y + 1, cmax_y do 
+    --local c_r = c_x - cmin_x 
+    for i = c_x + s_x * c_r, c_x - s_x * c_r, -s_x do 
+        for j = c_y + s_y * c_r, c_y - s_y * c_r, -s_y do
+    --for i = cmin_x + 1, cmax_x do 
+        --for j = cmin_y + 1, cmax_y do 
             ori_x, ori_y = (i - cshift_x) * 8, (j - cshift_y) * 8 
-            --if (i - c_x) * (i - c_x) + (j - c_y) * (j - c_y) < c_r * c_r and 
-            if ori_x > min_x and ori_x < max_x and ori_y > min_y and ori_y < max_y then
+            if (i - c_x) * (i - c_x) + (j - c_y) * (j - c_y) < c_r * c_r 
+                and ori_x > min_x and ori_x < max_x and ori_y > min_y and ori_y < max_y then
                 mset(i, j, mget(i - cshift_x, j - cshift_y))
             else
                 --mset(i, j, 0)

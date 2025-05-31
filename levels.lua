@@ -139,7 +139,7 @@ function load_next_level()
     player.sp = player.awaking and 59 or player.sp
 
     if 7 == level_index then
-        bubble_time, boost_time, max_bubble_time, max_bubble_per = 180, 300, 300, 0.6
+        bubble_time, boost_time, max_bubble_time, max_bubble_per = 240, 300, 300, 0.8
     elseif 6 == level_index then
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 180, 300, 300, 0.6
     elseif 0 == level_index then
