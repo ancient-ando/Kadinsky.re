@@ -426,7 +426,8 @@ function draw_light()
  --camera(cam_x - offset_x, cam_y - offset_y)
  --map(0, 0, 0, 0, 128, 128, 8)
  camera(d_x, d_y)
- map(i_x, i_y, 0, 0, 16, 16, 8)
+ map(i_x, i_y, 0, 0, 16, 16, 128)
+ 
 
  d_x = cam_x
  d_y = cam_y
@@ -437,6 +438,7 @@ function draw_light()
  --camera(cam_x, cam_y)
  --map(0, 0, 0, 0, 128, 128, 7) -- draw objects with flag 0, 1 & 2
  camera(d_x, d_y)
+ map(i_x, i_y, 0, 0, 16, 16, 64)
  map(i_x, i_y, 0, 0, 16, 16, 7)
 
  camera(cam_x, cam_y)
