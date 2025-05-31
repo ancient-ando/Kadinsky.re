@@ -1,3 +1,4 @@
+-- Tokens minimalised --
 cursed_keys_current_frame, cursed_keys_last_frame, 
 cursed_chests_current_frame, cursed_chests_last_frame = {}, {}, {}, {}
 

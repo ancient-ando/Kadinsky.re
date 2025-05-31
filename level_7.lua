@@ -26,12 +26,9 @@ end]]--
 function dream_infinity()
     if not new_infinity then return end
     local c_r = ceil(sqrt(player.bubble_size) / 8) + 0.5
-    local c_x = mid_x / 8
-    local c_y = mid_y / 8
-    local cmin_x = min_x / 8
-    local cmin_y = min_y / 8
-    local cmax_x = max_x / 8
-    local cmax_y = max_y / 8
+    local c_x, c_y = mid_x / 8, mid_y / 8
+    local cmin_x, cmax_x = min_x / 8, max_x / 8
+    local cmin_y, cmax_y = min_y / 8, max_y / 8
 
     -------------------------
     ----Cloud Generation-----

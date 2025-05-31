@@ -1,10 +1,8 @@
+-- Tokens minimalised --
 --variables
-gravity = 0.04
-friction = 0.85
-
+gravity, friction = 0.04, 0.85
 --number of frames player can spend in the air and still be able to jump
-max_coyote = 10
-coyote_time = 0
+max_coyote, coyote_time = 10, 0
 
 
 function player_init(spawn_x, spawn_y, awaking)
@@ -38,19 +36,14 @@ function player_init(spawn_x, spawn_y, awaking)
 end
 
 
-k_left = 0
-k_right = 1
-k_up = 2
-k_down = 3
-k_x = 5
+k_left, k_right, k_up, k_down, k_x = 0, 1, 2, 3, 5
 --player
 function player_update()
 
     player.bubble_size = radius * radius * 64
     --wake-up
     if player.awaking then
-        player.dy = 0
-        player.dx = 0
+        player.dy, player.dx = 0, 0
         if  awake_timer > 0 then
             awake_timer -= 1
             return 
@@ -67,8 +60,7 @@ function player_update()
     end
     --teleportation 
     if player.teleporting then
-        player.dy = 0
-        player.dx = 0
+        player.dy, player.dx = 0, 0
         if tele_timer > 0 then
             tele_timer -= 1
         else
@@ -85,41 +77,24 @@ function player_update()
     --jump 
     if btnp(k_x) and not player.jumped and 
     (player.landed or coyote_time > 0) then
-        if player.jumped then
-            jump = "yes"
-        else
-            jump = "no"
-        end
-        if player.landed then
-            land = "yes"
-        else
-            land = "no"
-        end
+        jump = player.jumped and "yes" or "no"
+        land = player.landed and "yes" or "no"
 
         init_smoke(player)
         init_foam(player)
         --printh("coyote + jumped + landed ".. coyote_time .. jump.. " "..land, "log.txt")
         psfx(11)
         player.dy -= player.boost
-        player.landed = false
-        player.jumped = true
+        player.landed, player.jumped = false, true
     end
     --controls
     if btn(k_left) then 
-        if player.landed then
-           -- sfx(11)
-        end
         player.dx -= player.acc
-        player.running = true
-        player.flip = true
+        player.running, player.flip = true, true
     end
     if btn(k_right) then
-        if player.landed then
-           --sfx(11)
-        end
         player.dx += player.acc
-        player.running = true
-        player.flip = false
+        player.running, player.flip = true, false
     end
     --slide
     if player.running and
@@ -127,11 +102,8 @@ function player_update()
     not btn(k_right) and
     not player.falling and 
     not player.jumping then
-        player.running = false
-        player.sliding = true
+        player.running, player.sliding = false, true
     end
-
-    
 
     --collision
     if player.dy > 0 then
@@ -143,16 +115,12 @@ function player_update()
         end
 
 
-        player.falling = true
-        player.landed = false
-        player.jumping = false
+        player.falling, player.landed, player.jumping = true, false, false
 
         player.dy = limit_speed(player.dy, player.max_dy)
         if collide_map(player, "down", 0) then
             
-            player.landed = true
-            player.jumped = false
-            player.falling = false
+            player.landed, player.jumped, player.falling = true, false, false
             player.dy = 0
 
             while pixel_perfect_collide(0, x1r, y1r - 1, x2r, y2r - 1) do
@@ -296,21 +264,16 @@ end
 --collisions
 function pixel_perfect_collide(flag, x1, y1, x2, y2)
     local perfect_collision = false
-    local celx = 49 % 16
-    local cely = flr(49 / 16)
+    local celx, cely = 49 % 16, 49 \ 16
     for i = x1, x2, 1 do 
         for j = y1, y2, 1 do 
-            local deltai = i - x1 
-            local deltaj = j - y1 
-            local x = celx * 8 + deltai
-            local y = cely * 8 + deltaj
+            local deltai, deltaj = i - x1, j - y1
+            local x, y = celx * 8 + deltai, cely * 8 + deltaj
             if -1 != deltai and 8 != deltai and -1 != deltaj and 8 != deltaj and 0 != sget(x, y) then 
-                local celi = flr(i / 8)
-                local celj = flr(j / 8)
+                local celi, celj = i \ 8, j \ 8
                 local sij = mget(celi, celj)
-                local sx = sij % 16 
-                local sy = flr(sij / 16) 
-                if 0!= sij and fget(sij, flag) and 0 != sget(sx * 8 + flr(i) % 8, sy * 8 + flr(j) % 8) then
+                local sx, sy = sij % 16, sij \ 16
+                if 0 != sij and fget(sij, flag) and 0 != sget(sx * 8 + flr(i) % 8, sy * 8 + flr(j) % 8) then
                     perfect_collision = true
                 end
             end
@@ -319,36 +282,19 @@ function pixel_perfect_collide(flag, x1, y1, x2, y2)
     return perfect_collision
 end
 function collide_map(obj, dir, flag)
-    local x = obj.x local y = obj.y
-    local w = obj.w local h = obj.h
-    local x1 = 0 local y1 = 0
-    local x2 = 0 local y2 = 0
+    local x, y, w, h = obj.x, obj.y, obj.w, obj.h 
+    local x1, y1, x2, y2 = 0, 0, 0, 0
     if dir == "left" then
-        x1 = x - 1
-        y1 = y 
-        x2 = x
-        y2 = y + h - 1
+        x1, y1, x2, y2 = x - 1, y, x, y + h - 1
     elseif dir == "right" then
-        x1 = x + w - 1
-        y1 = y
-        x2 = x + w
-        y2 = y + h - 1
+        x1, y1, x2, y2 = x + w - 1, y, x + w, y + h - 1
     elseif dir == "up" then
-        x1 = x + 2
-        y1 = y - 1
-        x2 = x + w - 3
-        y2 = y + 2 
+        x1, y1, x2, y2 = x + 2, y - 1, x + w - 3, y + 2
     elseif dir == "down" then
-        x1 = x + 2
-        y1 = y + h - 2
-        x2 = x + w - 3
-        y2 = y + h 
+        x1, y1, x2, y2 = x + 2, y + h - 2, x + w - 3, y + h 
     end
     --update collison box 
-    x1r = x1
-    y1r = y1
-    x2r = x2
-    y2r = y2
+    x1r, y1r, x2r, y2r = x1, y1, x2, y2
 
     x1 /= 8
     y1 /= 8
@@ -359,7 +305,8 @@ function collide_map(obj, dir, flag)
     or fget(mget(x2, y1), flag)
     or fget(mget(x2, y2), flag)) and pixel_perfect_collide(flag, x1r, y1r, x2r, y2r) then 
         return true
-    else return false 
+    else 
+        return false 
     end
 end
 
