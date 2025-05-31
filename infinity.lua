@@ -9,17 +9,9 @@ function shift_infinity()
     p_x, p_y = player.x / 8, player. y / 8
     cmin_x, cmax_x = min_x / 8, max_x / 8
     cmin_y, cmax_y = min_y / 8, max_y / 8
-    --local c_r = c_x - cmin_x 
-    --for i = c_x + s_x * c_r, c_x - s_x * c_r, -s_x do 
-        --for j = c_y + s_y * c_r, c_y - s_y * c_r, -s_y do
     for i = p_x + s_x * c_r, p_x - s_x * c_r, -s_x do 
         for j = p_y + s_y * c_r, p_y - s_y * c_r, -s_y do
-    --for i = cmin_x + 1, cmax_x do 
-        --for j = cmin_y + 1, cmax_y do 
-            --ori_x, ori_y = (i - cshift_x) * 8, (j - cshift_y) * 8 
-            --if (i - c_x) * (i - c_x) + (j - c_y) * (j - c_y) < c_r * c_r then 
             if (i - p_x) * (i - p_x) + (j - p_y) * (j - p_y) < c_r2 then
-            --if ori_x > min_x and ori_x < max_x and ori_y > min_y and ori_y < max_y then
                 mset(i, j, mget(i - cshift_x, j - cshift_y))
             end
         end
@@ -30,10 +22,9 @@ end
 
 function update_infinity()
     new_infinity = false
-    move_infinity = false
     cshift_x, cshift_y, shift_x, shift_y = 0, 0, 0, 0
     if 6 <= level_index then
-        if 0 == infinite_timer or frame_timer - infinite_timer > 3000 or player.x < q1_x or player.x > q3_x or player.y < q1_y or player.y > q3_y then
+        if 0 == infinite_timer or player.x < q1_x or player.x > q3_x or player.y < q1_y or player.y > q3_y then
             if player.x < q1_x or player.x > q3_x or player.y < q1_y or player.y > q3_y then
                 dream_shift += 1
             else
