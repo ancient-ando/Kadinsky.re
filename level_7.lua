@@ -48,13 +48,13 @@ function dream_infinity()
     cmin_x, cmax_x = min_x / 8, max_x / 8
     cmin_y, cmax_y = min_y / 8, max_y / 8
 
-    --[[for i = cmin_x + 1, cmax_x - 1 do
+    for i = cmin_x + 1, cmax_x - 1 do
         for j = cmin_y + 1, cmax_y - 1 do
             if (i - c_x) * (i - c_x) + (j - c_y) * (j - c_y) >= c_r * c_r then
                 mset(i, j, 0)
             end
         end
-    end]]--
+    end
 
     -------------------------
     ----Cloud Generation-----
@@ -63,7 +63,7 @@ function dream_infinity()
     seed = hash_pearson(tshift_x, tshift_y)
     srand(seed)
     --------[Cumulus]--------
-    num_cloud = 20
+    num_cloud = 2
     for i = 1, num_cloud do 
         local h, x, y = flr(rnd(1) + 2), flr(rnd(24) + 4), flr(rnd(24) + 4)
         local cloud_x, cloud_y = x, y

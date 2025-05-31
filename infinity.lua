@@ -17,7 +17,7 @@ function shift_infinity()
                 and ori_x > min_x and ori_x < max_x and ori_y > min_y and ori_y < max_y then
                 mset(i, j, mget(i - cshift_x, j - cshift_y))
             else
-                --mset(i, j, 0)
+                mset(i, j, 0)
             end
         end
     end
