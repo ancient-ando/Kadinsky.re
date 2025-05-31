@@ -15,7 +15,7 @@ function update_bubble(x, y)
        end
     end
 	radius = min_r + range * (bubble_time / max_bubble_time)
-	radius_percent = (radius - min_r) * 100 / range
+	radius_percent = player.awaking and 0.001 or (radius - min_r) * 100 / range
 
 end
 

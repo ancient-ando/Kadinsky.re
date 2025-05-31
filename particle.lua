@@ -6,9 +6,9 @@ function bool2num(b)
 end
 function init_particles(num)
     --
-    if count(particles) >= num then return end
+    if #particles >= num then return end
     if 0 ~= shift_x or 0 ~= shift_y then 
-        for i = 0, num - count(particles), 1 do
+        for i = 0, num - #particles, 1 do
             a_y = abs(shift_y)
             a_x = abs(shift_x)
             area_y = a_y * (max_x - min_x)
@@ -54,7 +54,7 @@ function init_particles(num)
             
         end
     else
-        for i = 0, num - count(particles), 1 do
+        for i = 0, num - #particles, 1 do
             add(particles, {
                 x = rnd(max_x - min_x),
                 y = rnd(max_y - min_y),

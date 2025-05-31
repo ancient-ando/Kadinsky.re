@@ -1,3 +1,5 @@
+-- Token minimised -- 
+
 
 --[[
 Inspired by Celestes approach, maps will be one big grid that 
@@ -11,7 +13,6 @@ Loading entails moving the player and changing the bounds of the camera
 
 --simple camera
 cam_x, cam_y = 0, 0
-
 
 --map limits 
 map_start, map_end = 0, 640
@@ -115,38 +116,27 @@ function load_next_level()
     end
     particles = {}
     init_particles(num_particles)
-    last_x = x0
-    last_y = y0
-    offset_x = 0
-    offset_y = 0
-    move_x = 0
-    move_y = 0
+    last_x, last_y = x0, y0
+    offset_x, offset_y, move_x, move_y = 0, 0, 0, 0
 
-    x2 = x1 + 128
-    y2 = y1 + 128 
+    x2, y2 = x1 + 128, y1 + 128
     cam_y = y1
     if player.awaking then
         for i = x1, x2 - 1, 8 do
             for j = y1, y2 - 1, 8 do
-                celx = flr(i / 8)
-                cely = flr(j / 8)
+                --celx = flr(i / 8)
+                --cely = flr(j / 8)
+                celx, cely = i \ 8, j \ 8
                 --if fget(mget(celx, cely), 5) then 
                 if 59 == mget(celx, cely) then 
-                    x0 = celx * 8
-                    y0 = cely * 8 
+                    x0, y0 = celx * 8, cely * 8
                 end
             end
         end
     end
-    
-
-    
 
     load_level(x0, y0, true, player.awaking)
-    
-    if player.awaking then 
-        player.sp = 59 
-    end
+    player.sp = player.awaking and 59 or player.sp
 
     if 7 == level_index then
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 180, 300, 300, 0.6
@@ -183,95 +173,38 @@ function load_next_level()
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 400, 400, 1
     end
     
-    
     init_blending(6)
-    num_keys_get = 0
-    num_opened_chests = 0
-    num_crystal_get = 0
+
+    num_keys_get, num_opened_chests, num_crystal_get = 0, 0, 0
     if 7 == level_index then
-        num_cursed_keys = 4  
-        num_cursed_chests = 5 
-
-        num_boost = 3 
-        num_crystal = 2 
-
-        num_crystal_required = 2
-        num_opened_chests_required = 2
-        weirdness_key = 0.5
-        weirdness_chest = 1
+        num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 4, 5, 3, 2
+        num_crystal_required, num_opened_chests_required = 2, 2
+        weirdness_key, weirdness_chest = 0.5, 1
         hint = false
     end
-    if 6 == level_index then
-        if hint then 
-            num_cursed_keys = 5
-        else
-            num_cursed_keys = 4  
-        end
-        num_cursed_chests = 5 
-
-        num_boost = 3 
-        num_crystal = 2 
-
-        num_crystal_required = 2
-        num_opened_chests_required = 2
-        weirdness_key = 0.5
-        weirdness_chest = 1
-        hint = false
-    end
+    
     if 1 == level_index then
-        if hint then 
-            num_cursed_keys = 5
-        else
-            num_cursed_keys = 4  
-        end  
-        num_cursed_chests = 5 
-
-        num_boost = 3 
-        num_crystal = 2 
-
-        num_crystal_required = 2
-        num_opened_chests_required = 2
-        weirdness_key = 0.5
-        weirdness_chest = 0.5
+        num_cursed_keys, num_cursed_chests, num_boost, num_crystal = hint and 5 or 4, 5, 3, 2
+        num_crystal_required, num_opened_chests_required = 2, 2
+        weirdness_key, weirdness_chest = 0.5, 0.5
         hint = false
     end
     if 2 == level_index then
-        num_cursed_keys = 2
-        num_cursed_chests = 2
-
-        num_boost = 1
-        num_crystal = 1
-
-        num_crystal_required = 1
-        num_opened_chests_required = 2
-        weirdness_key = 1
-        weirdness_chest = 1
+        num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 2, 2, 1, 1
+        num_crystal_required, num_opened_chests_required = 1, 2
+        weirdness_key, weirdness_chest = 1, 1
         hint = false
     end
     if 0 == level_index then 
-        num_cursed_keys = 1
-        num_cursed_chests = 2
-
-        num_boost = 0
-        num_crystal = 2
-
-        num_crystal_required = 1
-        num_opened_chests_required = 1
-        weirdness_key = 1
-        weirdness_chest = 0.5
+        num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 1, 2, 0, 2
+        num_crystal_required, num_opened_chests_required = 1, 1
+        weirdness_key, weirdness_chest = 1, 0.5
         hint = false
     end 
     if 3 == level_index then
-        num_cursed_keys = 1  
-        num_cursed_chests = 1 
-
-        num_boost = 0 
-        num_crystal = 1 
-
-        num_crystal_required = 1
-        num_opened_chests_required = 1
-        weirdness_key = 1
-        weirdness_chest = 1
+        num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 1, 1, 0, 1
+        num_crystal_required, num_opened_chests_required = 1, 1
+        weirdness_key, weirdness_chest = 1, 1
         hint = true
     end
 end
@@ -302,25 +235,23 @@ end
 function camera_update()
     if abs(player.last_x - player.x) > 0.01 or abs(player.last_y - player.y) > 0.01 then
         frame_timer += 1
-        player.last_x = player.x
-        player.last_y = player.y 
+        player.last_x, player.last_y = player.x, player.y
     end
     --simple camera
     --cam_x = player.x - 64 + player.w / 2
     --printh("player pos x y ".. player.x.. ", ".. player.y, "log0.txt")
+    local m_x, m_y = flr(player.x) - 64 + player.w / 2 - cam_x, flr(player.y) - 64 + player.h / 2 - cam_y
     if 6 > level_index then  
         smooth = 4
-        delta_x = (flr(player.x) - 64 + player.w / 2 - cam_x + 0.5) / smooth
+        delta_x = (m_x + 0.5) / smooth
         cam_x += delta_x
         if cam_x < map_start then
             cam_x = map_start
         end
     end 
     if 6 <= level_index then
-        delta_x = (flr(player.x) - 64 + player.w / 2 - cam_x)
-        delta_y = (flr(player.y) - 64 + player.h / 2 - cam_y) 
-        cam_x += delta_x
-        cam_y += delta_y
+        cam_x += m_x
+        cam_y += m_y
     end
 
 end
@@ -328,5 +259,5 @@ end
 --Called in draw function
 function draw_cam()
     clip() 
-   camera(cam_x, cam_y)
+    camera(cam_x, cam_y)
 end
