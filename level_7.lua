@@ -2,10 +2,6 @@
     table = ""
     for s = 1, 127 do 
         snum = 0
-        snum = (27 == s or 9 == s or 84 == s) and 27 or snum
-            snum = (43 == s or 42 == s or 41 == s or (s >= 10 and s <= 13) or 95 == s or (s >= 96 and s <= 99)) and 41 or snum
-            snum = (46 == s or 47 == s or 30 == s or 31 == s or 29 == s or 26 == s or 111 == s or 79 == s or 116 == s or (s >= 112 and s <= 115) or 101 == s or 100 == s) and 79 or snum
-            snum = (45 == s or 44 == s or 28 == s or 25 == s or 127 == s or 117 == s) and 44 or snum
         table = table .. snum .. ", "
     end
     printh(table, "log.txt")
@@ -30,40 +26,25 @@ function init_pearson(s)
 end
 init_pearson(1024)
 
---[[function hash_pearson(x, y)
-    --x, y = x \ 128 * 128, y \ 128 * 128
-    local data = {x % 251, y % 251}
-    local h = #data
-    foreach(data, function(d)
-        --printh('\n data ' .. d, 'log.txt')
-        h = pearson[bxor(h, d)]
-    end)
-    return h
-end]]--
-
 function hash_pearson(h, x)
     x %= 251 
     return pearson[bxor(h, x)]
 end
 
 
-tile116 = split "0, 0, 0, 0, 0, 0, 0, 0, 29, 111, 111, 111, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 26, 111, 47, 29, 26, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 29, 29, 111, 47, 26, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 0, 0, 0, 0, 29, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 111, 111, 111, 111, 111, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 26, 26, 26, 26, 0, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47"
-tile117 = split "0, 0, 0, 0, 0, 0, 0, 0, 45, 127, 127, 127, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 28, 45, 28, 28, 0, 25, 25, 0, 0, 0, 0, 0, 0, 0, 0, 45, 127, 127, 45, 45, 25, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 0, 0, 127, 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 127, 127, 127, 127, 127, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 25, 25, 25, 25, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127" 
-tile84 = split "0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 42, 42, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 43, 0, 95, 43, 95, 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 42, 43, 42, 95, 95, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 42, 42, 42, 42, 95, 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 95, 95, 95, 95, 43, 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95"
-tile85 = split "0, 0, 0, 0, 0, 0, 0, 0, 27, 41, 41, 41, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 79, 27, 44, 79, 79, 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 41, 41, 44, 44, 79, 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 79, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 41, 41, 41, 41, 79, 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 79, 79, 79, 79, 79, 79, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44"
+--tile116 = split "0, 0, 0, 0, 0, 0, 0, 0, 29, 111, 111, 111, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 26, 111, 47, 29, 26, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 29, 29, 111, 47, 26, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 0, 0, 0, 0, 29, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 111, 111, 111, 111, 111, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 26, 26, 26, 26, 0, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47"
+--tile117 = split "0, 0, 0, 0, 0, 0, 0, 0, 45, 127, 127, 127, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 28, 45, 28, 28, 0, 25, 25, 0, 0, 0, 0, 0, 0, 0, 0, 45, 127, 127, 45, 45, 25, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 0, 0, 127, 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 127, 127, 127, 127, 127, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 25, 25, 25, 25, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127" 
+--tile84 = split "0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 42, 42, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 43, 0, 95, 43, 95, 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 42, 43, 42, 95, 95, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 42, 42, 42, 42, 95, 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 95, 95, 95, 95, 43, 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95"
+--tile85 = split "0, 0, 0, 0, 0, 0, 0, 0, 27, 41, 41, 41, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 79, 27, 44, 79, 79, 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 41, 41, 44, 44, 79, 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 79, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 41, 41, 41, 41, 79, 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 79, 79, 79, 79, 79, 79, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44"
 function try_mset(x, y, snum)
-    --printh("try_mset->init :"..x.." "..y, "log.txt")
-    --printh("c ".. cmin_x.. " ".. cmax_x .. " " .. cmin_y .. " " .. cmax_y, "log.txt")
     if x <= cmin_x or x >= cmax_x or y <= cmin_y or y >= cmax_y then return false end
     --if (x - c_x) * (x - c_x) + (y - c_y) * (y - c_y) < c_r2 then return false end
     if (x - p_x) * (x - p_x) + (y - p_y) * (y - p_y) < c_r2 then return false end
     local f = fget(mget(x, y))
-    --printh("f " .. f, "log.txt")
     if 0 != f and f < fget(snum) then return false end 
-    --printh("try_mset->succeed :"..x.." "..y .." "..snum, "log.txt")
     local s = mget(x, y)
     if f == fget(snum) then
-        --[[if 101 == s or (s >= 112 and s <= 115) then
+        if 101 == s or (s >= 112 and s <= 115) then
             snum = 116 == snum and 26 or snum
             snum = 117 == snum and 25 or snum
         end
@@ -95,43 +76,26 @@ function try_mset(x, y, snum)
             snum = 84 == snum and 95 or snum
         end 
         snum = (117 == snum and 117 != s) and 127 or snum
-        snum = (116 == snum and 116 != s) and 111 or snum]]--
+        snum = (116 == snum and 116 != s) and 111 or snum
 
-        
-        if 116 == snum then
-            --snum = (43 == s or 42 == s or 29 == s or 9 == s or 84 == s or 95 == s) and 29 or snum
-            --snum = (44 == s or 41 == s or 27 == s or 111 == s or 79 == s or 85 == s or 100 == s or (s >= 96 and s <= 99) or (s >= 10 and s <= 13)) and 111 or snum
-            --snum = (46 == s or 30 == s or 31 == s or 25 == s or 26 == s or 101 == s or (s >= 112 and s <= 115)) and 26 or snum
-            --snum = (47 == s or 45 == s or 28 == s or 117 == s or 127 == s) and 47 or snum 
+        --[[if 116 == snum then
             snum = 0 != tile116[s] and tile116[s] or snum 
         elseif 117 == snum then 
-            --snum = (43 == s or 42 == s or (s >= 10 and s <= 13) or 95 == s or 127 == s or 84 == s or 100 == s or (s >= 96 and s <= 99)) and 127 or snum 
-            --snum = (41 == s or 27 == s or 9 == s or 85 == s or 79 == s or 44 == s or 45 == s) and 45 or snum 
-            --snum = (46 == s or 30 == s or 31 == s or 25 == s or 101 == s or (s >= 112 and s <= 115)) and 25 or snum
-            --snum = (47 == s or 29 == s or 28 == s or 26 == s or 111 == s or 116 == s) and 28 or snum 
             snum = 0 != tile117[s] and tile117[s] or snum 
         elseif 84 == snum then
-            --snum = (85 == s) and 9 or snum
-            --snum = (44 == s or 41 == s or 42 == s or (s >= 10 and s <= 13) or 79 == s or (s >= 96 and s <= 99)) and 42 or snum
-            --snum = (45 == s or 46 == s or 30 == s or 31 == s or 28 == s or 25 == s or 127 == s or 95 == s or 117 == s or 101 == s or (s >= 112 and s <= 115) or 100 == s) and 95 or snum
-            --snum = (47 == s or 43 == s or 29 == s or 26 == s or 111 == s or 116 == s) and 43 or snum 
             snum = 0 != tile84[s] and tile84[s] or snum 
         elseif 85 == snum then
-            --snum = (27 == s or 9 == s or 84 == s) and 27 or snum
-            --snum = (43 == s or 42 == s or 41 == s or (s >= 10 and s <= 13) or 95 == s or (s >= 96 and s <= 99)) and 41 or snum
-            --snum = (46 == s or 47 == s or 30 == s or 31 == s or 29 == s or 26 == s or 111 == s or 79 == s or 116 == s or (s >= 112 and s <= 115) or 101 == s or 100 == s) and 79 or snum
-            --snum = (45 == s or 44 == s or 28 == s or 25 == s or 127 == s or 117 == s) and 44 or snum 
             snum = 0 != tile85[s] and tile85[s] or snum
-        else
-            snum = 96 == snum and 10 or snum
-            snum = 98 == snum and 12 or snum
-            snum = 97 == snum and 11 or snum
-            snum = 99 == snum and 13 or snum
+        else]]--
+        snum = 96 == snum and 10 or snum
+        snum = 98 == snum and 12 or snum
+        snum = 97 == snum and 11 or snum
+        snum = 99 == snum and 13 or snum
 
-            snum = 101 == snum and 46 or snum
-            snum = 112 == snum and 31 or snum
-            snum = 113 == snum and 30 or snum
-        end
+        snum = 101 == snum and 46 or snum
+        snum = 112 == snum and 31 or snum
+        snum = 113 == snum and 30 or snum
+        --end
     end
     mset(x, y, snum)
     return true 
@@ -153,7 +117,6 @@ function cloud_size(s)
 end
 
 function dream_infinity()
-    --if true then return end
     if not new_infinity then return end
     c_r = ceil(sqrt(player.bubble_size) / 8) + 0.5
     c_r2 = c_r * c_r
@@ -195,7 +158,6 @@ function dream_infinity()
         c = 1 - c
         hashy = hash_pearson(42, b - tshift_y)
         for a = min_x + 8 * c, max_x, 16 do
-            --seed = hash_pearson(a - tshift_x, b - tshift_y) 
             seed = hash_pearson(hashy, a - tshift_x)
             if seed <= hash_limit then 
                 srand(bxor(a - tshift_x + 1023, b - tshift_y - 1023) + seed)
