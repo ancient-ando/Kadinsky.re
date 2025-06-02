@@ -1,3 +1,18 @@
+--[[function print_table()
+    table = ""
+    for s = 1, 127 do 
+        snum = 0
+        snum = (27 == s or 9 == s or 84 == s) and 27 or snum
+            snum = (43 == s or 42 == s or 41 == s or (s >= 10 and s <= 13) or 95 == s or (s >= 96 and s <= 99)) and 41 or snum
+            snum = (46 == s or 47 == s or 30 == s or 31 == s or 29 == s or 26 == s or 111 == s or 79 == s or 116 == s or (s >= 112 and s <= 115) or 101 == s or 100 == s) and 79 or snum
+            snum = (45 == s or 44 == s or 28 == s or 25 == s or 127 == s or 117 == s) and 44 or snum
+        table = table .. snum .. ", "
+    end
+    printh(table, "log.txt")
+end
+print_table()]]--
+
+
 pearson = {}
 seed = 0
 function init_pearson(s)
@@ -31,6 +46,11 @@ function hash_pearson(h, x)
     return pearson[bxor(h, x)]
 end
 
+
+tile116 = split "0, 0, 0, 0, 0, 0, 0, 0, 29, 111, 111, 111, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 26, 111, 47, 29, 26, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 29, 29, 111, 47, 26, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 0, 0, 0, 0, 29, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 111, 111, 111, 111, 111, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 26, 26, 26, 26, 0, 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47"
+tile117 = split "0, 0, 0, 0, 0, 0, 0, 0, 45, 127, 127, 127, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 28, 45, 28, 28, 0, 25, 25, 0, 0, 0, 0, 0, 0, 0, 0, 45, 127, 127, 45, 45, 25, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 0, 0, 127, 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 127, 127, 127, 127, 127, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 25, 25, 25, 25, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127" 
+tile84 = split "0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 42, 42, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 43, 0, 95, 43, 95, 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 42, 43, 42, 95, 95, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 42, 42, 42, 42, 95, 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 95, 95, 95, 95, 43, 95, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95"
+tile85 = split "0, 0, 0, 0, 0, 0, 0, 0, 27, 41, 41, 41, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 79, 27, 44, 79, 79, 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 41, 41, 44, 44, 79, 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 79, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 41, 41, 41, 41, 79, 79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 79, 79, 79, 79, 79, 79, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44"
 function try_mset(x, y, snum)
     --printh("try_mset->init :"..x.." "..y, "log.txt")
     --printh("c ".. cmin_x.. " ".. cmax_x .. " " .. cmin_y .. " " .. cmax_y, "log.txt")
@@ -43,7 +63,7 @@ function try_mset(x, y, snum)
     --printh("try_mset->succeed :"..x.." "..y .." "..snum, "log.txt")
     local s = mget(x, y)
     if f == fget(snum) then
-        if 101 == s or (s >= 112 and s <= 115) then
+        --[[if 101 == s or (s >= 112 and s <= 115) then
             snum = 116 == snum and 26 or snum
             snum = 117 == snum and 25 or snum
         end
@@ -52,7 +72,7 @@ function try_mset(x, y, snum)
             snum = 84 == snum and 42 or snum
         end 
         if s >= 84 and s <= 85 and 1 == bxor(s, snum) then
-            snum = 85 == s and 30 or 27
+            snum = 85 == s and 9 or 27
         end 
         if s >= 116 and s <= 117 and 1 == bxor(s, snum) then
             snum = 28
@@ -70,15 +90,48 @@ function try_mset(x, y, snum)
             snum = 45
         end
         if s < 84 or s > 85 then 
+        --if 79 == s or 95 == s or 111 == s or 127 == s or (s >= 100 and s <= 101) or (s >= 112 and s <= 117) then 
             snum = 85 == snum and 79 or snum
             snum = 84 == snum and 95 or snum
         end 
         snum = (117 == snum and 117 != s) and 127 or snum
-        snum = (116 == snum and 116 != s) and 111 or snum
-        snum = 96 == snum and 10 or snum
-        snum = 98 == snum and 12 or snum
-        snum = 97 == snum and 11 or snum
-        snum = 99 == snum and 13 or snum
+        snum = (116 == snum and 116 != s) and 111 or snum]]--
+
+        
+        if 116 == snum then
+            --snum = (43 == s or 42 == s or 29 == s or 9 == s or 84 == s or 95 == s) and 29 or snum
+            --snum = (44 == s or 41 == s or 27 == s or 111 == s or 79 == s or 85 == s or 100 == s or (s >= 96 and s <= 99) or (s >= 10 and s <= 13)) and 111 or snum
+            --snum = (46 == s or 30 == s or 31 == s or 25 == s or 26 == s or 101 == s or (s >= 112 and s <= 115)) and 26 or snum
+            --snum = (47 == s or 45 == s or 28 == s or 117 == s or 127 == s) and 47 or snum 
+            snum = 0 != tile116[s] and tile116[s] or snum 
+        elseif 117 == snum then 
+            --snum = (43 == s or 42 == s or (s >= 10 and s <= 13) or 95 == s or 127 == s or 84 == s or 100 == s or (s >= 96 and s <= 99)) and 127 or snum 
+            --snum = (41 == s or 27 == s or 9 == s or 85 == s or 79 == s or 44 == s or 45 == s) and 45 or snum 
+            --snum = (46 == s or 30 == s or 31 == s or 25 == s or 101 == s or (s >= 112 and s <= 115)) and 25 or snum
+            --snum = (47 == s or 29 == s or 28 == s or 26 == s or 111 == s or 116 == s) and 28 or snum 
+            snum = 0 != tile117[s] and tile117[s] or snum 
+        elseif 84 == snum then
+            --snum = (85 == s) and 9 or snum
+            --snum = (44 == s or 41 == s or 42 == s or (s >= 10 and s <= 13) or 79 == s or (s >= 96 and s <= 99)) and 42 or snum
+            --snum = (45 == s or 46 == s or 30 == s or 31 == s or 28 == s or 25 == s or 127 == s or 95 == s or 117 == s or 101 == s or (s >= 112 and s <= 115) or 100 == s) and 95 or snum
+            --snum = (47 == s or 43 == s or 29 == s or 26 == s or 111 == s or 116 == s) and 43 or snum 
+            snum = 0 != tile84[s] and tile84[s] or snum 
+        elseif 85 == snum then
+            --snum = (27 == s or 9 == s or 84 == s) and 27 or snum
+            --snum = (43 == s or 42 == s or 41 == s or (s >= 10 and s <= 13) or 95 == s or (s >= 96 and s <= 99)) and 41 or snum
+            --snum = (46 == s or 47 == s or 30 == s or 31 == s or 29 == s or 26 == s or 111 == s or 79 == s or 116 == s or (s >= 112 and s <= 115) or 101 == s or 100 == s) and 79 or snum
+            --snum = (45 == s or 44 == s or 28 == s or 25 == s or 127 == s or 117 == s) and 44 or snum 
+            snum = 0 != tile85[s] and tile85[s] or snum
+        else
+            snum = 96 == snum and 10 or snum
+            snum = 98 == snum and 12 or snum
+            snum = 97 == snum and 11 or snum
+            snum = 99 == snum and 13 or snum
+
+            snum = 101 == snum and 46 or snum
+            snum = 112 == snum and 31 or snum
+            snum = 113 == snum and 30 or snum
+        end
     end
     mset(x, y, snum)
     return true 
@@ -132,10 +185,10 @@ function dream_infinity()
         hash_limit = 16
     end 
 
-    ct = {96, 96, 97, 97, 98, 98, 98, 99, 99}
-    cl = {97, 97, 97, 97, 97, 98, 99, 99, 99}
-    cr = {99, 99, 98, 96, 96, 96, 96, 96, 96}
-    cb = {101, 112, 113, 114, 115, 115, 115, 115, 114}
+    ct = split "96, 96, 97, 97, 98, 98, 98, 99, 99"
+    cl = split "97, 97, 97, 97, 97, 98, 99, 99, 99"
+    cr = split "99, 99, 98, 96, 96, 96, 96, 96, 96"
+    cb = split "101, 112, 113, 114, 115, 115, 115, 115, 114"
     cc = #ct 
     c = 0
     for b = min_y, max_y, 16 do
