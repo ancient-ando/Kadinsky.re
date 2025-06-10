@@ -18,14 +18,14 @@ function _update60()
 
    
     player_update()
-    update_infinity()
+    --update_infinity()
     player_animate()
     menu_update()    
 
     camera_update()
     update_light()
-    shift_infinity()
-    dream_infinity()
+    --shift_infinity()
+    --dream_infinity()
     update_sfx()
     update_smoke()
     update_foam()
@@ -84,10 +84,10 @@ function show_performance()
         "dream:" ..dream_shift .. " time:"..time_shift .. " ratio: ".. (dream_shift + 1) / (dream_shift + time_shift + 2)
         print(shif, 0,110+cam_y,7) 
     end
-    if tshift_x and tshift_y then
+    --[[if tshift_x and tshift_y then
         local tshif = "x:" .. tshift_x .. " y:" .. tshift_y .. " seed:" .. seed
         print(tshif, 0, 0 + cam_y, 7)
-    end
+    end]]--
 
     camera()
     clip(xl,yt,xr-xl+1,yb-yt+1)

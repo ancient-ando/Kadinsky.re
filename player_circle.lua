@@ -19,24 +19,33 @@ function update_bubble(x, y)
 
 end
 
-sound_time, max_sound_time = 80, 80
+sound_time, max_sound_time = 80, 80  
+last_time = time()
 
 function update_bubble_sounds(index)
-	 if sound_time > 0 then
+	--[[if sound_time > 0 then
        sound_time -= 1
        if sound_time <= 0 then
-           sound_time = max_sound_time
+           sound_time = max_sound_time * (6 == index and 2 or 1)
 		   if not player.awaking and 6 > level_index then
-			psfx(index, 2)
+			psfx(index)
 		   end
        end
-    end
+    end]]--
+	max_sound_time = 6 == index and 160/3 or 80/3
+	current_time = time()
+	if current_time - last_time > max_sound_time / 60 then 
+		last_time = current_time
+		if not player.awaking and 6 > level_index then
+			psfx(index)
+		end
+	end
 end
 
 function get_brightness(min_b, max_b)
 	local size = (radius_percent * (max_b-min_b) / 100) + min_b
 	if size >= 0.8 then
-		update_bubble_sounds(07)
+		update_bubble_sounds(06)
 	elseif size >= 0.5 then
 		update_bubble_sounds(08)
 	elseif bubble_time >= 27 then

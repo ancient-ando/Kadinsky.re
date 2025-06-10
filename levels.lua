@@ -49,8 +49,9 @@ next_level[-1] = 3 pre_level[3] = -1 hint_limit[3] = 0
 next_level[3] = 0 pre_level[0] = 3 hint_limit[0] = 0
 next_level[0] = 2 pre_level[2] = 0 hint_limit[2] = 1
 next_level[2] = 1 pre_level[1] = 2 hint_limit[1] = 2
-next_level[1] = 7 pre_level[7] = 1 hint_limit[7] = 3
-next_level[7] = 5 pre_level[5] = 7 hint_limit[5] = 1
+--next_level[1] = 7 pre_level[7] = 1 hint_limit[7] = 3
+--next_level[7] = 5 pre_level[5] = 7 hint_limit[5] = 1
+next_level[1] = 5 pre_level[5] = 1 hint_limit[5] = 1
 
 
 
@@ -62,7 +63,7 @@ function load_next_level()
 
     set_sfx_speeds({36, 30, 40, 44, 50, 52}, 28)
 
-    if 7 == level_index then
+    --[[if 7 == level_index then
         set_sfx_speeds({36, 30, 40, 44, 50, 52}, 56)
         time_shift, dream_shift = 0, 0
         x1, y1, x0, y0 = 640, 0, 768, 128
@@ -73,7 +74,7 @@ function load_next_level()
         q3_x, q3_y = (mid_x + max_x) / 2, (mid_y + max_y) / 2
         num_particles = 128
         water, air = true, true
-    end
+    end]]--
     
     if 0 == level_index then
         x1, y1, x0, y0 = 128, 384, 128 + 24, 384 + 8 
@@ -138,9 +139,10 @@ function load_next_level()
     load_level(x0, y0, true, player.awaking)
     player.sp = player.awaking and 59 or player.sp
 
-    if 7 == level_index then
+    --[[if 7 == level_index then
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 200, 300, 300, 0.66
-    elseif 6 == level_index then
+    elseif 6 == level_index then]]--
+    if 6 == level_index then 
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 180, 300, 300, 0.6
     elseif 0 == level_index then
         if 2 == difficulty then 
@@ -176,12 +178,12 @@ function load_next_level()
     init_blending(6)
 
     num_keys_get, num_opened_chests, num_crystal_get = 0, 0, 0
-    if 7 == level_index then
+    --[[if 7 == level_index then
         num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 4, 5, 3, 2
         num_crystal_required, num_opened_chests_required = 2, 2
         weirdness_key, weirdness_chest = 0.5, 1
         hint = false
-    end
+    end]]--
     
     if 1 == level_index then
         num_cursed_keys, num_cursed_chests, num_boost, num_crystal = hint and 5 or 4, 5, 3, 2

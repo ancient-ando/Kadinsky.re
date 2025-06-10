@@ -85,6 +85,7 @@ function(k)
     level_index = level
     reload_level()
     level_display = "level: " .. level
+    hint = false
     menuitem(nil, level_display)
     return true
 end)
