@@ -56,6 +56,7 @@ next_level[1] = 5 pre_level[5] = 1 hint_limit[5] = 1
 
 
 function load_next_level()
+    iframe_time = 0
     --current_index = -1 
     level_index = next_level[level_index]
     level = level_index
@@ -175,6 +176,8 @@ function load_next_level()
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 400, 400, 1
     end
     
+    vbubble_time = bubble_time --Visual bubble time 
+
     init_blending(6)
 
     num_keys_get, num_opened_chests, num_crystal_get = 0, 0, 0

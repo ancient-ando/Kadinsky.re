@@ -458,6 +458,7 @@ function draw_light()
  render_cursed_chests(2)
  spr(player.sp, flr(player.x), flr(player.y), 1, 1, player.flip)
 
+
  camera(cam_x, cam_y)
  render_smoke()
  render_foam()

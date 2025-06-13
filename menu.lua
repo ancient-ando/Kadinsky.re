@@ -50,8 +50,8 @@ function menu_update()
 end
 
 
-difficulty = 1
-menuitem(4, "difficulty: ▮▮-", 
+difficulty = 0
+menuitem(4, "difficulty: ▮--", 
 function(k)
     if 2 == k and difficulty < 2 then
         difficulty += 1

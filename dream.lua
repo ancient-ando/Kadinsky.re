@@ -110,6 +110,11 @@ function player_update()
         --[[if coyote_time <= 0 then
             coyote_time = 10
         end]]--
+        if 0 == iframe_time and collide_map(player, "down", 3) then
+            --reload_level()
+            iframe_time = 120
+            sfx(12)
+        end
         if not player.falling and coyote_time <= 0 then
             coyote_time = max_coyote
         end
@@ -134,6 +139,11 @@ function player_update()
             end
         end 
     elseif player.dy < 0 then
+        if 0 == iframe_time and collide_map(player, "up", 3) then
+            --reload_level()
+            iframe_time = 120
+            sfx(12)
+        end
         player.jumping = true
         if collide_map(player, "up", 1) then
             player.dy = 0
@@ -142,6 +152,11 @@ function player_update()
 
     --left & right
     if player.dx < 0 then
+        if 0 == iframe_time and collide_map(player, "left", 3) then
+            --reload_level()
+            iframe_time = 120
+            sfx(12)
+        end
         player.dx = limit_speed(player.dx, player.max_dx)
         if collide_map(player, "left", 1) then
             player.dx = 0
@@ -158,6 +173,11 @@ function player_update()
         
     end
     if player.dx > 0 then
+        if 0 == iframe_time and collide_map(player, "right", 3) then
+            --reload_level()
+            iframe_time = 120
+            sfx(12)
+        end
         player.dx = limit_speed(player.dx, player.max_dx)
         if collide_map(player, "right", 1) then
             player.dx = 0
@@ -191,7 +211,17 @@ function player_update()
     if coyote_time > 0 then
        coyote_time -= 1
     end
-
+    if iframe_time > 0 then 
+        if vbubble_time > 0.3 then 
+            vbubble_time *= 0.9
+        end 
+        iframe_time -= 1
+    else 
+        vbubble_time = min(bubble_time, vbubble_time / 0.9)
+        if vbubble_time / bubble_time > 0.27 and vbubble_time / bubble_time < 0.3 then
+            sfx(19)
+        end  
+    end 
     player.was_landed = player.landed
     --printh(player.bubble_size, "log.txt")
 end
@@ -253,13 +283,6 @@ function player_animate()
     end
 end
 
---update and draw
-function draw_player()
-    spr(player.sp, player.x, player.y, 1, 1, player.flip)
-    --test--
-    --rect(x1r, y1r, x2r, y2r, 7)
-    
-end
 
 --collisions
 function pixel_perfect_collide(flag, x1, y1, x2, y2)
