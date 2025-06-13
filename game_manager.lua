@@ -75,6 +75,9 @@ function _draw()
     if 3 == level_index then 
         oprint("\^w\^t KADINSKY" ,50 ,50+cam_y, 14, 7)
     end
+    if 0 == level_index then
+        oprint("".. chr(131).. "\^w\^tTHE".."\^-w\^-t8-BIT HOLE", 96 + min_x, 12 + cam_y, 14, 7)
+    end
     if 2 == level_index then 
         --print("\^i\^w\^tDOUBLE-USE" ,150 + min_x, 112 + cam_y, 14)
         oprint("\^w\^tDOUBLE-USE", 150 + min_x, 112 + cam_y, 14, 7)

@@ -54,7 +54,7 @@ function get_boost_or_crystal()
     else -- get_boost
         num_boost -= 1
         sfx_timer = 5
-        sfx(19)
+        sfx(12)
         bubble_time = min(max_bubble_per * max_bubble_time, bubble_time + boost_time)
     end
 end

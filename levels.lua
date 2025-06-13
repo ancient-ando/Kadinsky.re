@@ -56,7 +56,7 @@ next_level[1] = 5 pre_level[5] = 1 hint_limit[5] = 1
 
 
 function load_next_level()
-    iframe_time = 0
+    iframe_time, aframe_time, last_flower = 0, 0, 0
     --current_index = -1 
     level_index = next_level[level_index]
     level = level_index

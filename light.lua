@@ -426,7 +426,7 @@ function draw_light()
  --camera(cam_x - offset_x, cam_y - offset_y)
  --map(0, 0, 0, 0, 128, 128, 8)
  camera(d_x, d_y)
- map(i_x, i_y, 0, 0, 16, 16, 128)
+ map(i_x + (0 == level_index and 48 or 0), i_y - (0 == level_index and -2 or 0), 0, 0, 16, 16, 128)
  
 
  d_x = cam_x
