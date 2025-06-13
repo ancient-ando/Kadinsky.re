@@ -4,6 +4,21 @@ gravity, friction = 0.04, 0.85
 --number of frames player can spend in the air and still be able to jump
 max_coyote, coyote_time = 10, 0
 
+function pow(x,a)
+  if (a==0) return 1
+  if (a<0) x,a=1/x,-a
+  local ret,a0,xn=1,flr(a),x
+  a-=a0
+  while a0>=1 do
+    if (a0%2>=1) ret*=xn
+    xn,a0=xn*xn,shr(a0,1)
+  end
+  while a>0 do
+    while a<1 do x,a=sqrt(x),a+a end
+    ret,a=ret*x,a-1
+  end
+  return ret
+end
 
 function player_init(spawn_x, spawn_y, awaking)
     
@@ -105,11 +120,18 @@ function player_update()
         player.running, player.sliding = false, true
     end
 
+    local flower = 0
     --collision
     if player.dy > 0 then
         --[[if coyote_time <= 0 then
             coyote_time = 10
         end]]--
+        if 0 == flower then
+            flower = collide_map(player, "down", 3)
+        end 
+
+
+
         if not player.falling and coyote_time <= 0 then
             coyote_time = max_coyote
         end
@@ -118,12 +140,12 @@ function player_update()
         player.falling, player.landed, player.jumping = true, false, false
 
         player.dy = limit_speed(player.dy, player.max_dy)
-        if collide_map(player, "down", 0) then
+        if 0 != collide_map(player, "down", 0) then
             
             player.landed, player.jumped, player.falling = true, false, false
             player.dy = 0
 
-            while pixel_perfect_collide(0, x1r, y1r - 1, x2r, y2r - 1) do
+            while 0 != pixel_perfect_collide(0, x1r, y1r - 1, x2r, y2r - 1) do
                 player.y -= 1
                 y1r -= 1
                 y2r -= 1
@@ -134,18 +156,24 @@ function player_update()
             end
         end 
     elseif player.dy < 0 then
+        if 0 == flower then
+            flower = collide_map(player, "down", 3)
+        end 
         player.jumping = true
-        if collide_map(player, "up", 1) then
+        if 0 != collide_map(player, "up", 1) then
             player.dy = 0
         end
     end
 
     --left & right
     if player.dx < 0 then
+        if 0 == flower then
+            flower = collide_map(player, "down", 3)
+        end 
         player.dx = limit_speed(player.dx, player.max_dx)
-        if collide_map(player, "left", 1) then
+        if 0 != collide_map(player, "left", 1) then
             player.dx = 0
-            if collide_map(player, "left", 4) or collide_map(player, "down", 4) then
+            if 0 != collide_map(player, "left", 4) or 0 != collide_map(player, "down", 4) then
                 player.x -= 1
                 player.y -= 1
                 x1r -= 1 
@@ -158,10 +186,13 @@ function player_update()
         
     end
     if player.dx > 0 then
+        if 0 == flower then
+            flower = collide_map(player, "down", 3)
+        end 
         player.dx = limit_speed(player.dx, player.max_dx)
-        if collide_map(player, "right", 1) then
+        if 0 != collide_map(player, "right", 1) then
             player.dx = 0
-            if collide_map(player, "right", 4) or collide_map(player, "down", 4) then
+            if 0 != collide_map(player, "right", 4) or 0 != collide_map(player, "down", 4) then
                 player.x += 1
                 player.y -= 1
                 x1r += 1 
@@ -192,6 +223,57 @@ function player_update()
        coyote_time -= 1
     end
 
+    if 0 != flower and 0 == last_flower then 
+        if 109 == flower and 0 == iframe_time then 
+            iframe_time, aframe_time = 120, 0
+            sfx(19)
+        end 
+        if 78 == flower and 0 == aframe_time then 
+            aframe_time, iframe_time = 120, 0
+            sfx(12)
+        end
+    end 
+    last_flower = flower 
+
+    if iframe_time > 0 then 
+        if vbubble_time > 0.3 then 
+            local p = vbubble_time / max_bubble_time
+            vbubble_time *= 0.99 - 0.1 * p -- Shrink from v to 0 
+            --vbubble_time *= pow(p, 0.1 / (1 - p))
+        end 
+        iframe_time -= 1
+    end 
+
+    if aframe_time > 0 then 
+        if vbubble_time < max_bubble_time then
+            local p = 1 - vbubble_time / max_bubble_time
+            vbubble_time = min(vbubble_time / (0.99 - 0.1 * p), max_bubble_time) -- Expand from v to max 
+            --vbubble_time = min(vbubble_time / pow(p, 0.1 / (1 - p)), max_bubble_time)
+        end
+        aframe_time -= 1
+    end
+
+    if 0 == iframe_time and 0 == aframe_time then 
+        if vbubble_time < bubble_time then 
+            local p = (bubble_time - vbubble_time) / max_bubble_time
+            vbubble_time /= (0.99 - 0.1 * p)
+            --vbubble_time /= pow(p, 0.1 / (1 - p))
+            vbubble_time = min(bubble_time, vbubble_time)
+            if vbubble_time / bubble_time > 0.27 and vbubble_time / bubble_time < 0.3 then
+                psfx(12)
+                sfx_timer = 10
+            end  
+        elseif vbubble_time > bubble_time then 
+            local p = (vbubble_time - bubble_time) / max_bubble_time
+            vbubble_time *= (0.99 - 0.1 * p)
+            --vbubble_time *= pow(p, 0.1 / (1 - p))
+            vbubble_time = max(bubble_time, vbubble_time)
+            if vbubble_time / bubble_time > 1.2 and vbubble_time / max_bubble_time > 0.81 and vbubble_time / max_bubble_time < 0.9 then
+                psfx(19)
+                sfx_timer = 10
+            end  
+        end
+    end
     player.was_landed = player.landed
     --printh(player.bubble_size, "log.txt")
 end
@@ -253,17 +335,10 @@ function player_animate()
     end
 end
 
---update and draw
-function draw_player()
-    spr(player.sp, player.x, player.y, 1, 1, player.flip)
-    --test--
-    --rect(x1r, y1r, x2r, y2r, 7)
-    
-end
 
 --collisions
 function pixel_perfect_collide(flag, x1, y1, x2, y2)
-    local perfect_collision = false
+    local perfect_collision = 0
     local celx, cely = 49 % 16, 49 \ 16
     for i = x1, x2, 1 do 
         for j = y1, y2, 1 do 
@@ -274,7 +349,7 @@ function pixel_perfect_collide(flag, x1, y1, x2, y2)
                 local sij = mget(celi, celj)
                 local sx, sy = sij % 16, sij \ 16
                 if 0 != sij and fget(sij, flag) and 0 != sget(sx * 8 + flr(i) % 8, sy * 8 + flr(j) % 8) then
-                    perfect_collision = true
+                    perfect_collision = sij
                 end
             end
         end
@@ -303,10 +378,10 @@ function collide_map(obj, dir, flag)
     if (fget(mget(x1, y1), flag) 
     or fget(mget(x1, y2), flag) 
     or fget(mget(x2, y1), flag)
-    or fget(mget(x2, y2), flag)) and pixel_perfect_collide(flag, x1r, y1r, x2r, y2r) then 
-        return true
+    or fget(mget(x2, y2), flag)) then 
+        return pixel_perfect_collide(flag, x1r, y1r, x2r, y2r)
     else 
-        return false 
+        return 0
     end
 end
 

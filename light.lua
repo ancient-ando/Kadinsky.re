@@ -426,7 +426,7 @@ function draw_light()
  --camera(cam_x - offset_x, cam_y - offset_y)
  --map(0, 0, 0, 0, 128, 128, 8)
  camera(d_x, d_y)
- map(i_x, i_y, 0, 0, 16, 16, 128)
+ map(i_x + (0 == level_index and 48 or 0), i_y - (0 == level_index and -2 or 0), 0, 0, 16, 16, 128)
  
 
  d_x = cam_x
@@ -457,6 +457,7 @@ function draw_light()
  render_cursed_keys(2)
  render_cursed_chests(2)
  spr(player.sp, flr(player.x), flr(player.y), 1, 1, player.flip)
+
 
  camera(cam_x, cam_y)
  render_smoke()

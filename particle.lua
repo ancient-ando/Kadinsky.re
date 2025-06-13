@@ -113,11 +113,12 @@ function init_smoke(obj)
 end
 function update_smoke()
     foreach(smoke, function (s)
-        if 7 == level_index then 
+        --[[if 7 == level_index then 
             s.spr += 0.02
         else
             s.spr += 0.2
-        end
+        end]]--
+        s.spr += 0.2 
         s.x += s.spdx 
         s.y += s.spdy 
 
@@ -160,7 +161,8 @@ function update_foam()
             del(foam, f)
         end
 
-        local mul = 7 == level_index and 3 or 1
+        --local mul = 7 == level_index and 3 or 1
+        local mul = 1
         f.y -= f.spdy / mul
         f.x += 0.25 * sin(f.off) / mul + f.spdx
         
