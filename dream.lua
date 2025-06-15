@@ -64,10 +64,11 @@ function player_update()
             return 
         elseif btn(k_left) or btn(k_right) or btn(k_up) or btn(k_down) or btnp(k_x) then
             player.awaking = false
-            if 6 > level_index then 
+            if 4 != level_index and 6 != level_index then 
                 music(level_index % 6, 300, 3)
-            elseif 6 <= level_index then
-                music(6 + level_index % 6, 300, 3)
+            elseif 4 == level_index or 6 == level_index then
+                --music(6 + level_index % 6, 300, 3)
+                music(-1)
             end
         else 
             return 
@@ -120,14 +121,14 @@ function player_update()
         player.running, player.sliding = false, true
     end
 
-    local flower = 0
+    local mech = 0
     --collision
     if player.dy > 0 then
         --[[if coyote_time <= 0 then
             coyote_time = 10
         end]]--
-        if 0 == flower then
-            flower = collide_map(player, "down", 3)
+        if 0 == mech then
+            mech = collide_map(player, "down", 3)
         end 
 
 
@@ -156,8 +157,8 @@ function player_update()
             end
         end 
     elseif player.dy < 0 then
-        if 0 == flower then
-            flower = collide_map(player, "down", 3)
+        if 0 == mech then
+            mech = collide_map(player, "down", 3)
         end 
         player.jumping = true
         if 0 != collide_map(player, "up", 1) then
@@ -167,8 +168,8 @@ function player_update()
 
     --left & right
     if player.dx < 0 then
-        if 0 == flower then
-            flower = collide_map(player, "down", 3)
+        if 0 == mech then
+            mech = collide_map(player, "down", 3)
         end 
         player.dx = limit_speed(player.dx, player.max_dx)
         if 0 != collide_map(player, "left", 1) then
@@ -186,8 +187,8 @@ function player_update()
         
     end
     if player.dx > 0 then
-        if 0 == flower then
-            flower = collide_map(player, "down", 3)
+        if 0 == mech then
+            mech = collide_map(player, "down", 3)
         end 
         player.dx = limit_speed(player.dx, player.max_dx)
         if 0 != collide_map(player, "right", 1) then
@@ -223,40 +224,79 @@ function player_update()
        coyote_time -= 1
     end
 
-    if 0 != flower and 0 == last_flower then 
-        if 109 == flower and 0 == iframe_time then 
-            iframe_time, aframe_time = 120, 0
-            sfx(19)
+    if 0 != mech and (0 == last_mech or 6 == level_index) then 
+        if 130 == mech or 146 == mech then
+            sfx(4)
+            sfx_timer = 15
+            -- teleportation 
+            player.teleporting = true
+            tele_timer = 50
+            return 
         end 
-        if 78 == flower and 0 == aframe_time then 
-            aframe_time, iframe_time = 120, 0
-            sfx(12)
+        if 109 == mech and 0 == iframe_time then 
+            if 2 == level_index then
+                iframe_time = 120
+            end
+            if 1 == level_index then
+                iframe_time = 120
+            end
+            if 5 == level_index then
+                iframe_time = 120
+            end
+            if 6 == level_index then
+                iframe_time = 1
+            end
+            if 4 == level_index then
+                iframe_time = 30000
+            end
+            aframe_time = 0
+            if 109 != last_mech then sfx(19) end 
+        end 
+        if 78 == mech and 0 == aframe_time then 
+            if 2 == level_index then 
+                aframe_time = 120
+            end
+            if 1 == level_index then 
+                aframe_time = 120
+            end
+            if 5 == level_index then 
+                aframe_time = 120
+            end
+            if 6 == level_index then 
+                aframe_time = 1
+            end
+            if 4 == level_index then
+                aframe_time = 30000
+            end 
+            iframe_time = 0 
+            if 78 != last_mech then sfx(12) end
         end
     end 
-    last_flower = flower 
-
+    last_mech = mech
+    local max_bubble_ptime = max_bubble_time * max_bubble_per
+    local kp = 6 == level_index and 0.01 or 0.1
+    local cp = 6 == level_index and 1 or 0.99
     if iframe_time > 0 then 
         if vbubble_time > 0.3 then 
-            local p = vbubble_time / max_bubble_time
-            vbubble_time *= 0.99 - 0.1 * p -- Shrink from v to 0 
+            local p = vbubble_time / max_bubble_ptime 
+            vbubble_time *= cp - kp * p -- Shrink from v to 0 
             --vbubble_time *= pow(p, 0.1 / (1 - p))
         end 
         iframe_time -= 1
     end 
-
     if aframe_time > 0 then 
-        if vbubble_time < max_bubble_time then
-            local p = 1 - vbubble_time / max_bubble_time
-            vbubble_time = min(vbubble_time / (0.99 - 0.1 * p), max_bubble_time) -- Expand from v to max 
+        if vbubble_time < max_bubble_ptime then
+            local p = 1 - vbubble_time / max_bubble_ptime
+            vbubble_time = min(vbubble_time / (cp - kp * p), max_bubble_ptime) -- Expand from v to max 
             --vbubble_time = min(vbubble_time / pow(p, 0.1 / (1 - p)), max_bubble_time)
         end
         aframe_time -= 1
     end
 
-    if 0 == iframe_time and 0 == aframe_time then 
+    if 6 != level_index and 0 == iframe_time and 0 == aframe_time  then 
         if vbubble_time < bubble_time then 
-            local p = (bubble_time - vbubble_time) / max_bubble_time
-            vbubble_time /= (0.99 - 0.1 * p)
+            local p = (bubble_time - vbubble_time) / max_bubble_ptime
+            vbubble_time /= (cp - kp * p)
             --vbubble_time /= pow(p, 0.1 / (1 - p))
             vbubble_time = min(bubble_time, vbubble_time)
             if vbubble_time / bubble_time > 0.27 and vbubble_time / bubble_time < 0.3 then
@@ -264,11 +304,11 @@ function player_update()
                 sfx_timer = 10
             end  
         elseif vbubble_time > bubble_time then 
-            local p = (vbubble_time - bubble_time) / max_bubble_time
-            vbubble_time *= (0.99 - 0.1 * p)
+            local p = (vbubble_time - bubble_time) / max_bubble_ptime
+            vbubble_time *= (cp - kp * p)
             --vbubble_time *= pow(p, 0.1 / (1 - p))
             vbubble_time = max(bubble_time, vbubble_time)
-            if vbubble_time / bubble_time > 1.2 and vbubble_time / max_bubble_time > 0.81 and vbubble_time / max_bubble_time < 0.9 then
+            if vbubble_time / bubble_time > 1.2 and vbubble_time / max_bubble_ptime > 0.81 and vbubble_time / max_bubble_ptime < 0.9 then
                 psfx(19)
                 sfx_timer = 10
             end  

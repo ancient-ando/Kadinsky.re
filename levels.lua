@@ -24,6 +24,7 @@ function load_level(x, y, restart_music, restart_level)
     fail_in_a_row = 0
     cursed_keys_current_anime = {}
     cursed_chests_current_anime = {}
+    cursed_flowers_current_anime = {}
     frame_timer, infinite_timer, ui_chest_timer, ui_key_timer = 0, 0, 0, 0
 	player_init(x, y, restart_level)
 	bubble_time = max_bubble_time
@@ -32,10 +33,11 @@ function load_level(x, y, restart_music, restart_level)
         if player.awaking then 
             music(-1)
         else
-            if level_index < 6 then 
+            if 4 != level_index and 6 != level_index then 
                 music(level_index % 6, 300, 3)
-            else
-                music(6 + level_index % 6, 300, 3)
+            elseif 4 == level_index or 6 == level_index then 
+                --music(6 + level_index % 6, 300, 3)
+                music(-1)
             end
         end
 
@@ -48,15 +50,17 @@ pre_level[-1] = -1
 next_level[-1] = 3 pre_level[3] = -1 hint_limit[3] = 0
 next_level[3] = 0 pre_level[0] = 3 hint_limit[0] = 0
 next_level[0] = 2 pre_level[2] = 0 hint_limit[2] = 1
-next_level[2] = 1 pre_level[1] = 2 hint_limit[1] = 2
+next_level[2] = 4 pre_level[4] = 2 hint_limit[4] = 10
+next_level[4] = 1 pre_level[1] = 4 hint_limit[1] = 2
 --next_level[1] = 7 pre_level[7] = 1 hint_limit[7] = 3
 --next_level[7] = 5 pre_level[5] = 7 hint_limit[5] = 1
-next_level[1] = 5 pre_level[5] = 1 hint_limit[5] = 1
+next_level[1] = 6 pre_level[6] = 1 hint_limit[6] = 2
+next_level[6] = 5 pre_level[5] = 6 hint_limit[5] = 1
 
 
 
 function load_next_level()
-    iframe_time, aframe_time, last_flower = 0, 0, 0
+    iframe_time, aframe_time, last_mech = 0, 0, 0
     --current_index = -1 
     level_index = next_level[level_index]
     level = level_index
@@ -108,6 +112,14 @@ function load_next_level()
         num_particles = 32
         water, air = true, false
     end
+    if 4 == level_index then
+        x1, y1, x0, y0 = 640, 448, 640 + 16, 448 + 16
+        gravity = 0.04
+        friction = 0.85
+        min_x, min_y, max_x, max_y = x1, y1, x1 + 64, y1 + 64
+        num_particles = 0
+        water, air = true, false
+    end
     if 5 == level_index then
         x1, y1, x0, y0 = 0, 128, 59, 128 + 59
         gravity = 0.04
@@ -115,6 +127,14 @@ function load_next_level()
         min_x, min_y, max_x, max_y = x1, y1, x1 + 640, y1 + 128
         num_particles = 160
         water, air = true, false
+    end
+    if 6 == level_index then
+        x1, y1, x0, y0 = 640, 384, 640 + 16, 384 + 16
+        gravity = 0.08
+        friction = 0.85
+        min_x, min_y, max_x, max_y = x1, y1, x1 + 256, y1 + 128
+        num_particles = 0
+        water, air = false, true
     end
     particles = {}
     init_particles(num_particles)
@@ -124,18 +144,34 @@ function load_next_level()
     x2, y2 = x1 + 128, y1 + 128
     cam_y = y1
     if player.awaking then
+        local f = false
         for i = x1, x2 - 1, 8 do
             for j = y1, y2 - 1, 8 do
                 --celx = flr(i / 8)
                 --cely = flr(j / 8)
                 celx, cely = i \ 8, j \ 8
                 --if fget(mget(celx, cely), 5) then 
-                if 59 == mget(celx, cely) then 
+                if 59 == mget(celx, cely) and not f then  
+                    f = true 
                     x0, y0 = celx * 8, cely * 8
                 end
             end
         end
+        for i = min_x, max_x - 1, 8 do
+            for j = min_y, max_y - 1, 8 do
+                --celx = flr(i / 8)
+                --cely = flr(j / 8)
+                celx, cely = i \ 8, j \ 8
+                --if fget(mget(celx, cely), 5) then 
+                local c = mget(celx, cely)
+                if 130 == c or 146 == c then 
+                    mset(celx, cely, c - 1) 
+                end
+            end
+        end
     end
+
+
 
     load_level(x0, y0, true, player.awaking)
     player.sp = player.awaking and 59 or player.sp
@@ -143,20 +179,18 @@ function load_next_level()
     --[[if 7 == level_index then
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 200, 300, 300, 0.66
     elseif 6 == level_index then]]--
-    if 6 == level_index then 
-        bubble_time, boost_time, max_bubble_time, max_bubble_per = 180, 300, 300, 0.6
-    elseif 0 == level_index then
+    if 0 == level_index then
         if 2 == difficulty then 
-            bubble_time, boost_time, max_bubble_time, max_bubble_per = 200, 0, 250, 0.8
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 224, 0, 280, 0.8
         elseif 1 == difficulty then 
-            bubble_time, boost_time, max_bubble_time, max_bubble_per = 240, 0, 300, 0.8
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 300, 0, 375, 0.8
         elseif 0 == difficulty then
-            bubble_time, boost_time, max_bubble_time, max_bubble_per = 320, 0, 400, 0.8
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 0, 500, 0.8
         end
 
     elseif 1 == level_index then
         if 2 == difficulty then 
-            bubble_time, boost_time, max_bubble_time, max_bubble_per = 180, 300, 300, 0.6
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 210, 300, 350, 0.6
         elseif 1 == difficulty then
             bubble_time, boost_time, max_bubble_time, max_bubble_per = 300, 300, 400, 0.75
         elseif 0 == difficulty then
@@ -164,7 +198,7 @@ function load_next_level()
         end
     elseif 2 == level_index then
         if 2 == difficulty then 
-            bubble_time, boost_time, max_bubble_time, max_bubble_per = 160, 200, 200, 0.8
+            bubble_time, boost_time, max_bubble_time, max_bubble_per = 220, 250, 275, 0.8
         elseif 1 == difficulty then 
             bubble_time, boost_time, max_bubble_time, max_bubble_per = 360, 400, 400, 0.9
         elseif 0 == difficulty then
@@ -172,9 +206,13 @@ function load_next_level()
         end
     elseif 3 == level_index then
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 400, 400, 1
+    elseif 4 == level_index then
+        bubble_time, boost_time, max_bubble_time, max_bubble_per = 180, 200, 200, 0.9
     elseif 5 == level_index then
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 400, 400, 1
-    end
+    elseif 6 == level_index then 
+        bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 400, 400, 1
+    end 
     
     vbubble_time = bubble_time --Visual bubble time 
 
@@ -187,11 +225,11 @@ function load_next_level()
         weirdness_key, weirdness_chest = 0.5, 1
         hint = false
     end]]--
-    
+    weirdness_flower = 1
     if 1 == level_index then
-        num_cursed_keys, num_cursed_chests, num_boost, num_crystal = hint and 5 or 4, 5, 3, 2
+        num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 5, 5, 3, 2
         num_crystal_required, num_opened_chests_required = 2, 2
-        weirdness_key, weirdness_chest = 0.5, 0.5
+        weirdness_key, weirdness_chest = 0.5, 0.8
         hint = false
     end
     if 2 == level_index then
@@ -210,8 +248,21 @@ function load_next_level()
         num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 1, 1, 0, 1
         num_crystal_required, num_opened_chests_required = 1, 1
         weirdness_key, weirdness_chest = 1, 1
-        hint = true
+        hint = false
     end
+    if 4 == level_index then
+        num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 3, 3, 0, 3
+        num_crystal_required, num_opened_chests_required = 3, 0
+        weirdness_key, weirdness_chest = 1, 1
+        hint = false
+    end
+    if 6 == level_index then 
+        num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 1, 1, 0, 1
+        num_crystal_required, num_opened_chests_required = 1, 0
+        weirdness_key, weirdness_chest, weirdness_flower = 1, 1, 0.42
+        hint = false
+    end 
+    
 end
 
 function reload_level()
@@ -246,7 +297,7 @@ function camera_update()
     --cam_x = player.x - 64 + player.w / 2
     --printh("player pos x y ".. player.x.. ", ".. player.y, "log0.txt")
     local m_x, m_y = flr(player.x) - 64 + player.w / 2 - cam_x, flr(player.y) - 64 + player.h / 2 - cam_y
-    if 6 > level_index then  
+    if 4 != level_index then  
         smooth = 4
         delta_x = (m_x + 0.5) / smooth
         cam_x += delta_x
@@ -254,9 +305,16 @@ function camera_update()
             cam_x = map_start
         end
     end 
-    if 6 <= level_index then
-        cam_x += m_x
-        cam_y += m_y
+    if 4 == level_index then
+        --cam_x += m_x
+        --cam_y += m_y
+        smooth = 4
+        delta_x = (m_x + 0.5) / smooth
+        cam_x += delta_x
+        if cam_x < map_start then
+            cam_x = map_start
+        end
+        cam_y = min_y + 16 
     end
 
 end

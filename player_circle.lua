@@ -8,7 +8,7 @@ sradius_percent = radius_percent
 --Currently called by the dream.lua's _update function so that it can print things
 function update_bubble(x, y)
 	--printh("\ndebug "..bubble_time, "log.txt")
-    if bubble_time >= 0.25 and 6 > level_index and 3 ~= level_index and not player.awaking then
+    if 4 != level_index and 6 != level_index and bubble_time >= 0.25 and 3 != level_index and not player.awaking then
        bubble_time -= 0.25
 
        if bubble_time < 0.25 and 5~= level_index and not player.teleporting then
@@ -39,7 +39,7 @@ function update_bubble_sounds(index)
 	current_time = time()
 	if current_time - last_time > max_sound_time / 60 then 
 		last_time = current_time
-		if not player.awaking and 6 > level_index then
+		if not player.awaking and 4 != level_index and 6 != level_index then
 			psfx(index)
 		end
 	end

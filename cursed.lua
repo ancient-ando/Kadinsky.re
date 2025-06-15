@@ -36,20 +36,50 @@ function get_cursed_keys()
         end
     end
 end
+function get_cursed_flowers()
+
+    local celx, cely = (player.x + player.w / 2) \ 8, (player.y + player.h / 2) \ 8
+    --if fget(mget(celx, cely), 7) then 
+    if 110 == mget(celx, cely) then 
+        --rect(celx * 8 - 2, cely * 8 - 2, celx * 8 + 2, cely * 8 + 2)
+        --rect(player.x - 3, player.y - 3, player.x + 3, player.y + 3)
+        if #(v(celx * 8, cely * 8) - v(player.x, player.y)) < critical_distance then
+            --printh('\n new key found', 'log.txt')
+            --printh('\n new key found'..num_keys_get, 'log.txt')
+            local hash = get_hash(celx, cely)
+            if "flower" == cursed_flowers_last_frame[hash] then
+                reload_level()
+            end
+        end
+    end
+end
 function get_boost_or_crystal()
     local total = num_boost + num_crystal
     if 0 == total then return end 
     no = flr(rnd(total) + 1)
     if no > num_boost and num_opened_chests >= num_opened_chests_required then -- get_crystal
+        ui_crystal_timer = 75
         num_crystal_get += 1
         sfx(1)
         num_crystal -= 1
         if num_crystal_get >= num_crystal_required then
-            sfx(4)
+            for i = min_x, max_x - 1, 8 do
+                for j = min_y, max_y - 1, 8 do
+                    --celx = flr(i / 8)
+                    --cely = flr(j / 8)
+                    celx, cely = i \ 8, j \ 8
+                    --if fget(mget(celx, cely), 5) then 
+                    local c = mget(celx, cely)
+                    if 129 == c or 145 == c then 
+                        mset(celx, cely, c + 1) 
+                    end
+                end
+            end
+            --[[sfx(4)
             sfx_timer = 15
             -- teleportation 
             player.teleporting = true
-            tele_timer = 50
+            tele_timer = 50]]--
         end
     else -- get_boost
         num_boost -= 1
@@ -99,7 +129,7 @@ function render_ui_keys()
     clip(xl,yt,xr-xl+1,yb-yt+1)
 end
 
-ui_chest_timer, ui_key_timer = 0, 0
+ui_chest_timer, ui_key_timer, ui_crystal_timer = 0, 0, 0
 function render_ui_chests()
     clip()
     if ui_chest_timer <= 0 then
@@ -114,6 +144,19 @@ function render_ui_chests()
     end
     clip(xl,yt,xr-xl+1,yb-yt+1)
 end
+
+function render_ui_crystals()
+    clip()
+    for i = 0, num_crystal_required - 1, 1 do 
+        spr(151, cam_x + i * 6 + 1, cam_y + 22, 1, 1)
+    end
+    for i = 0, num_crystal_get - 1, 1 do
+        spr(150 - i % 2, cam_x + i * 6 + 1, cam_y + 22, 1, 1)
+    end
+    
+    clip(xl,yt,xr-xl+1,yb-yt+1)
+end
+
 function render_cursed_keys(pass)
     local cursed_keys_current_frame = {}
 
@@ -192,6 +235,56 @@ function render_cursed_keys(pass)
     --cursed_keys_last_frame = cursed_keys_current_frame -- this doesn't work cause table copies by reference, not value
 end
 
+cursed_flowers_last_frame = {}
+function render_cursed_flowers()
+    local cursed_flowers_current_frame = {}
+
+    local x1, x2, y1, y2 = cam_x, cam_x + 136, cam_y, cam_y + 136
+
+    for i = x1, x2 - 1, 8 do
+        for j = y1, y2 - 1, 8 do
+            --local celx = flr((i ) / 8)
+            --local cely = flr((j ) / 8) 
+            local celx, cely = i \ 8, j \ 8 
+            --if fget(mget(celx, cely), 7) then 
+            if 110 == mget(celx, cely) then 
+                local r = sqrt(player.bubble_size) + bubble_delta 
+                local hash = get_hash(celx, cely)
+                cursed_flowers_current_frame[hash] = #(v(celx * 8, cely * 8) - v(flr(player.x), flr(player.y))) < r * r 
+                and "inside" or "outside"
+            end
+        end
+    end
+    for k, va in pairs(cursed_flowers_last_frame) do
+        if "inside" == cursed_flowers_current_frame[k] and "flower" == va then 
+            cursed_flowers_current_frame[k] = "flower"
+        elseif "inside" == cursed_flowers_current_frame[k] and "inside_empty" == va then
+            --printh("cursed...", "log.txt")
+            cursed_flowers_current_frame[k] = "inside_empty"
+        end
+    end
+    --printh("pass w al".. pass .. " " .. weirdness_key .. allocated_keys, "log.txt")
+    for k, va in pairs(cursed_flowers_current_frame) do
+        if "inside" == va then
+            cursed_flowers_current_frame[k] = rnd(1) < weirdness_flower and "flower" or "inside_empty"
+        elseif "outside" == va then 
+            cursed_flowers_current_frame[k] = "outside_empty"
+        end
+    end
+
+    for k, va in pairs(cursed_flowers_current_frame) do
+        local hashx, hashy = get_hashx(k), get_hashy(k)
+        if "flower" == va then
+            spr(110, hashx, hashy, 1, 1) -- cursed_flower
+        end
+    end
+    cursed_flowers_last_frame = {}
+    for k, va in pairs(cursed_flowers_current_frame) do
+        cursed_flowers_last_frame[k] = va
+    end 
+    --cursed_keys_last_frame = cursed_keys_current_frame -- this doesn't work cause table copies by reference, not value
+end
+
 function render_cursed_chests(pass)
     local cursed_chests_current_frame = {}
     local x1, x2, y1, y2 = cam_x, cam_x + 136, cam_y, cam_y + 136
@@ -232,7 +325,7 @@ function render_cursed_chests(pass)
     for k, va in pairs(cursed_chests_current_frame) do
         if "inside" == va then
             if allocated_chests <= num_cursed_chests and rnd(1) < weirdness_chest then -- this number controls how cursed it is, 0 means devil, 1 means normal
-                if num_allocated_opened_chests < num_opened_chests and rnd(1) < 0.5 then 
+                if 2 != level_index and num_allocated_opened_chests < num_opened_chests and rnd(1) < 0.5 then 
                     cursed_chests_current_frame[k] = "open"
                     num_allocated_opened_chests += 1
                 elseif allocated_chests < num_cursed_chests then
@@ -267,14 +360,14 @@ function render_cursed_chests(pass)
             if nil == cursed_chests_current_anime[k] or 0 == frame_timer % 1 then
                 if rnd(1) < weirdness_chest then
                     --local r = rnd(1)
-                    if num_opened_chests > 0 then
-                        cursed_chests_current_anime[k] = rnd(1) < 0.5 and 169 or 170
+                    if num_opened_chests > 0 and 2 != level_index then
+                        cursed_chests_current_anime[k] = rnd(1) < 0.8 and 169 or 170
                     else
                         cursed_chests_current_anime[k] = 169
                     end
                 else
                     local r = rnd(1)
-                    if num_opened_chests > 0 then 
+                    if num_opened_chests > 0 and 2 != level_index then 
                         if r < 0.25 then 
                             cursed_chests_current_anime[k] = 156
                         elseif r < 0.5 then

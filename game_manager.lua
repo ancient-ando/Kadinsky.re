@@ -20,7 +20,8 @@ function _update60()
     player_update()
     --update_infinity()
     player_animate()
-    menu_update()    
+    menu_update1()
+    menu_update3()    
 
     camera_update()
     update_light()
@@ -69,21 +70,28 @@ function _draw()
     update_bubble(flr(player.x) + player.w / 4, flr(player.y)+player.h / 4)
     --camera(0, 0)
     if (info) show_performance()
-    --camera(cam_x, cam_y)
+    camera(cam_x, cam_y)
     clip()
    --print("KEYS:" .. num_keys_get,10+cam_x,10+cam_y, 14)
+   if 1 == level_index then 
+        oprint("\^w\^t NIGHT\^-w\^-tMARE" ,320 + min_x ,50 + cam_y, 14, 7)
+    end
     if 3 == level_index then 
-        oprint("\^w\^t KADINSKY" ,50 ,50+cam_y, 14, 7)
+        oprint("\^w\^t KADINSKY" ,50 ,50 + cam_y, 14, 7)
     end
     if 0 == level_index then
         oprint("".. chr(131).. "\^w\^tTHE".."\^-w\^-t8-BIT HOLE", 96 + min_x, 12 + cam_y, 14, 7)
     end
     if 2 == level_index then 
         --print("\^i\^w\^tDOUBLE-USE" ,150 + min_x, 112 + cam_y, 14)
-        oprint("\^w\^tDOUBLE-USE", 150 + min_x, 112 + cam_y, 14, 7)
-        
-        
+        oprint("\^w\^tDOUBLE\^-w\^-t-USE", 150 + min_x, 112 + cam_y, 14, 7)
     end
+    if 4 == level_index then 
+        oprint("\^-w\^-tOUT OF\^w\^tTIME", 16 + min_x, 104 + cam_y, 14, 7)
+    end 
+    if 6 == level_index then 
+        oprint("\^-w\^-tOUT OF\^w\^tLUCK", 16 + min_x, 104 + cam_y, 14, 7)
+    end 
     if 5 == level_index then 
         print ("\^w\^t THANKS FOR PLAYING!", 50, 30 + cam_y, 14, 7)
         oprint ("a GAME IN A <bubble>", 50, 48 + cam_y, 14, 7)
