@@ -13,7 +13,7 @@ function(k)
 end)
 
 
-function menu_update()
+function menu_update1()
     menuitem(1, "hints: "..(hint and "on" or "off"), 
     function(k)
         if 112 == k then 
@@ -38,7 +38,7 @@ function(k)
 end)
 
 
-function menu_update()
+function menu_update3()
     menuitem(3, "<INFO>: "..(info and "on" or "off"), 
     function(k)
         if 112 == k then 
@@ -83,9 +83,10 @@ function(k)
         level = pre_level[level]
     end
     level_index = level
+    fail_in_a_row = -1 
     reload_level()
-    level_display = "level: " .. level
     hint = false
+    level_display = "level: " .. level
     menuitem(nil, level_display)
     return true
 end)

@@ -250,7 +250,7 @@ function fl_light(lx,ly,brightness,ln)
   -- + per line flicker effect
   local mul=
    brightnessf * 
-    (rnd(0.16)+0.92)
+    (4 == level_index and 1 or (rnd(0.16)+0.92))
   -- calculate light levels
   -- at left end, right end,
   local ysq=oy*oy

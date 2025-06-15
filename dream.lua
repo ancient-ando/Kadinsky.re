@@ -64,10 +64,11 @@ function player_update()
             return 
         elseif btn(k_left) or btn(k_right) or btn(k_up) or btn(k_down) or btnp(k_x) then
             player.awaking = false
-            if 6 > level_index then 
+            if 4 != level_index then 
                 music(level_index % 6, 300, 3)
-            elseif 6 <= level_index then
-                music(6 + level_index % 6, 300, 3)
+            elseif 4 == level_index then
+                --music(6 + level_index % 6, 300, 3)
+                music(-1)
             end
         else 
             return 
@@ -225,11 +226,29 @@ function player_update()
 
     if 0 != flower and 0 == last_flower then 
         if 109 == flower and 0 == iframe_time then 
-            iframe_time, aframe_time = 120, 0
+            if 2 == level_index then
+                iframe_time = 120
+            end
+            if 1 == level_index then
+                iframe_time = 120
+            end
+            if 4 == level_index then
+                iframe_time = 30000
+            end
+            aframe_time = 0
             sfx(19)
         end 
         if 78 == flower and 0 == aframe_time then 
-            aframe_time, iframe_time = 120, 0
+            if 2 == level_index then 
+                aframe_time = 120
+            end
+            if 1 == level_index then 
+                aframe_time = 120
+            end
+            if 4 == level_index then
+                aframe_time = 30000
+            end 
+            iframe_time = 0 
             sfx(12)
         end
     end 

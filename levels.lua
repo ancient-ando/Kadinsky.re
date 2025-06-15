@@ -32,10 +32,11 @@ function load_level(x, y, restart_music, restart_level)
         if player.awaking then 
             music(-1)
         else
-            if level_index < 6 then 
+            if 4 != level_index then 
                 music(level_index % 6, 300, 3)
-            else
-                music(6 + level_index % 6, 300, 3)
+            elseif 4 == level_index then 
+                --music(6 + level_index % 6, 300, 3)
+                music(-1)
             end
         end
 
@@ -48,7 +49,8 @@ pre_level[-1] = -1
 next_level[-1] = 3 pre_level[3] = -1 hint_limit[3] = 0
 next_level[3] = 0 pre_level[0] = 3 hint_limit[0] = 0
 next_level[0] = 2 pre_level[2] = 0 hint_limit[2] = 1
-next_level[2] = 1 pre_level[1] = 2 hint_limit[1] = 2
+next_level[2] = 4 pre_level[4] = 2 hint_limit[4] = 10
+next_level[4] = 1 pre_level[1] = 4 hint_limit[1] = 2
 --next_level[1] = 7 pre_level[7] = 1 hint_limit[7] = 3
 --next_level[7] = 5 pre_level[5] = 7 hint_limit[5] = 1
 next_level[1] = 5 pre_level[5] = 1 hint_limit[5] = 1
@@ -106,6 +108,14 @@ function load_next_level()
         friction = 0.85
         min_x, min_y, max_x, max_y = x1, y1, x1 + 128, y1 + 128
         num_particles = 32
+        water, air = true, false
+    end
+    if 4 == level_index then
+        x1, y1, x0, y0 = 640, 448, 640 + 16, 448 + 16
+        gravity = 0.04
+        friction = 0.85
+        min_x, min_y, max_x, max_y = x1, y1, x1 + 64, y1 + 64
+        num_particles = 0
         water, air = true, false
     end
     if 5 == level_index then
@@ -172,6 +182,8 @@ function load_next_level()
         end
     elseif 3 == level_index then
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 400, 400, 1
+    elseif 4 == level_index then
+        bubble_time, boost_time, max_bubble_time, max_bubble_per = 200, 200, 200, 1
     elseif 5 == level_index then
         bubble_time, boost_time, max_bubble_time, max_bubble_per = 400, 400, 400, 1
     end
@@ -210,7 +222,13 @@ function load_next_level()
         num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 1, 1, 0, 1
         num_crystal_required, num_opened_chests_required = 1, 1
         weirdness_key, weirdness_chest = 1, 1
-        hint = true
+        hint = false
+    end
+    if 4 == level_index then
+        num_cursed_keys, num_cursed_chests, num_boost, num_crystal = 3, 3, 0, 3
+        num_crystal_required, num_opened_chests_required = 3, 0
+        weirdness_key, weirdness_chest = 1, 1
+        hint = false
     end
 end
 
@@ -246,7 +264,7 @@ function camera_update()
     --cam_x = player.x - 64 + player.w / 2
     --printh("player pos x y ".. player.x.. ", ".. player.y, "log0.txt")
     local m_x, m_y = flr(player.x) - 64 + player.w / 2 - cam_x, flr(player.y) - 64 + player.h / 2 - cam_y
-    if 6 > level_index then  
+    if 4 != level_index then  
         smooth = 4
         delta_x = (m_x + 0.5) / smooth
         cam_x += delta_x
@@ -254,9 +272,16 @@ function camera_update()
             cam_x = map_start
         end
     end 
-    if 6 <= level_index then
-        cam_x += m_x
-        cam_y += m_y
+    if 4 == level_index then
+        --cam_x += m_x
+        --cam_y += m_y
+        smooth = 4
+        delta_x = (m_x + 0.5) / smooth
+        cam_x += delta_x
+        if cam_x < map_start then
+            cam_x = map_start
+        end
+        cam_y = min_y + 16 
     end
 
 end

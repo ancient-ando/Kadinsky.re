@@ -232,7 +232,7 @@ function render_cursed_chests(pass)
     for k, va in pairs(cursed_chests_current_frame) do
         if "inside" == va then
             if allocated_chests <= num_cursed_chests and rnd(1) < weirdness_chest then -- this number controls how cursed it is, 0 means devil, 1 means normal
-                if num_allocated_opened_chests < num_opened_chests and rnd(1) < 0.5 then 
+                if 2 != level_index and num_allocated_opened_chests < num_opened_chests and rnd(1) < 0.5 then 
                     cursed_chests_current_frame[k] = "open"
                     num_allocated_opened_chests += 1
                 elseif allocated_chests < num_cursed_chests then
@@ -267,14 +267,14 @@ function render_cursed_chests(pass)
             if nil == cursed_chests_current_anime[k] or 0 == frame_timer % 1 then
                 if rnd(1) < weirdness_chest then
                     --local r = rnd(1)
-                    if num_opened_chests > 0 then
-                        cursed_chests_current_anime[k] = rnd(1) < 0.5 and 169 or 170
+                    if num_opened_chests > 0 and 2 != level_index then
+                        cursed_chests_current_anime[k] = rnd(1) < 0.8 and 169 or 170
                     else
                         cursed_chests_current_anime[k] = 169
                     end
                 else
                     local r = rnd(1)
-                    if num_opened_chests > 0 then 
+                    if num_opened_chests > 0 and 2 != level_index then 
                         if r < 0.25 then 
                             cursed_chests_current_anime[k] = 156
                         elseif r < 0.5 then
