@@ -250,7 +250,7 @@ function fl_light(lx,ly,brightness,ln)
   -- + per line flicker effect
   local mul=
    brightnessf * 
-    (4 == level_index and 1 or (rnd(0.16)+0.92))
+    ((4 == level_index or 6 == level_index) and 1 or (rnd(0.16)+0.92))
   -- calculate light levels
   -- at left end, right end,
   local ysq=oy*oy
@@ -446,6 +446,8 @@ function draw_light()
  get_cursed_keys()
  render_cursed_chests(1)
  get_cursed_chests()  
+ render_cursed_flowers()
+ get_cursed_flowers()
  
  camera(cam_x - min_x, cam_y - min_y)
  render_particles()
@@ -465,6 +467,7 @@ function draw_light()
 
  render_ui_keys()
  render_ui_chests()
+ render_ui_crystals()
 
 end
 
